@@ -43,7 +43,7 @@ public abstract class MixinRecipeApplier {
             stacks = new ArrayList<>();
             for (int i = 0; i < stackIn.getCount(); i++) {
                 List<DynamicProcessingOutput<?>> outputs = pr.getRollableResults(); //get HeatedOutputs
-                for (ItemStack stack : pr.rollResults(outputs,inputTemp)) {
+                for (ItemStack stack : pr.rollResults(outputs,inputTemp, level.random)) {
                     for (ItemStack previouslyRolled : stacks) {
                         if (stack.isEmpty())
                             continue;

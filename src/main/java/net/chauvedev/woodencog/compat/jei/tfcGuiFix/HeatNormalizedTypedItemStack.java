@@ -43,11 +43,9 @@ public class HeatNormalizedTypedItemStack implements ITypedIngredient<ItemStack>
     }
 
     public ItemStack getIngredient() {
-        //WoodenCog.LOGGER.info("HeatTypedItemStack getIngredient");
         ItemStack itemStack = new ItemStack(this.itemHolder, 1);
         itemStack.setTag(this.tag);
         if(this.heat != null){
-            //WoodenCog.LOGGER.info("HeatNormalizedTypedItemStack returned "+itemStack.getItem()+" ingredient with "+ heat.getTemperature());
             HeatCapability.setTemperature(itemStack, heat.getTemperature());
         }
         return itemStack;

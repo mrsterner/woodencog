@@ -20,7 +20,6 @@ public class WoodencogItems {
         //Unfinished variants
         TFCItems.METAL_ITEMS.forEach((aDefault, itemTypeRegistryObjectMap) -> {
             itemTypeRegistryObjectMap.forEach((itemType, itemRegistryObject) -> {
-                assert itemRegistryObject.getKey() != null;
                 String name = itemRegistryObject.getId().toString();
                 String newname = name.replaceAll("tfc:|minecraft:", "") +"/unfinished";
                 ITEMS.register(

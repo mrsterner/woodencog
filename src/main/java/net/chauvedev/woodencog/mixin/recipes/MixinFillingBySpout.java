@@ -7,9 +7,11 @@ import net.chauvedev.woodencog.recipes.advancedProcessingRecipe.AllAdvancedRecip
 import net.chauvedev.woodencog.recipes.advancedProcessingRecipe.baseRecipes.SetItemStackProvider;
 //import net.dries007.tfc.common.capabilities.MoldLike;
 import net.dries007.tfc.util.Metal;
+import net.minecraft.util.RandomSource;
 import net.minecraft.world.Container;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.crafting.Recipe;
+import net.minecraft.world.item.crafting.RecipeInput;
 import net.minecraft.world.level.Level;
 //import net.minecraftforge.fluids.FluidStack;
 //import net.minecraftforge.fluids.capability.IFluidHandler;
@@ -29,8 +31,8 @@ public class MixinFillingBySpout {
      */
     @Redirect(
             method = "canItemBeFilled",
-            at = @At(value = "INVOKE", target = "Lcom/simibubi/create/AllRecipeTypes;find(Lnet/minecraft/world/Container;Lnet/minecraft/world/level/Level;)Ljava/util/Optional;"))
-    private static <C extends Container, T extends Recipe<C>> Optional<T> canItemBeFilled(AllRecipeTypes instance, C inv, Level world, Level world2, ItemStack stack) {
+            at = @At(value = "INVOKE", target = "Lcom/simibubi/create/AllRecipeTypes;find(Lnet/minecraft/world/item/crafting/RecipeInput;Lnet/minecraft/world/level/Level;)Ljava/util/Optional;"))
+    private static<I extends RecipeInput, R extends Recipe<I>> Optional<R> canItemBeFilled(AllRecipeTypes instance, I inv, Level world) {
         if (instance.find(inv, world).isPresent()){
             FillingRecipe recipe = (FillingRecipe) instance.find(inv, world).get();
 
@@ -48,11 +50,11 @@ public class MixinFillingBySpout {
      * @reason Allow advanced recipe on spout filling
      */
     @Redirect(method = "fillItem",
-            at = @At(value = "INVOKE", target = "Lcom/simibubi/create/content/fluids/transfer/FillingRecipe;rollResults()Ljava/util/List;"))
-    private static List<ItemStack> fillItem(FillingRecipe fillingRecipe, Level world, int requiredAmount, ItemStack stack, FluidStack availableFluid) {
-        List<ItemStack> results = fillingRecipe.rollResults();
+            at = @At(value = "INVOKE", target = "Lcom/simibubi/create/content/fluids/transfer/FillingRecipe;rollResults(Lnet/minecraft/util/RandomSource;)Ljava/util/List;"))
+    private static List<ItemStack> fillItem(FillingRecipe instance, RandomSource randomSource) {
+        List<ItemStack> results = instance.rollResults(randomSource);
 
-        boolean is_advanced_recipe = AllAdvancedRecipeTypes.CACHES.containsKey(fillingRecipe.getId().toString());
+        boolean is_advanced_recipe = AllAdvancedRecipeTypes.CACHES.containsKey(instance.getId().toString());
         if(is_advanced_recipe) {
             ArrayList<ItemStack> newStacks = new ArrayList<>();
 

@@ -7,6 +7,8 @@ import net.chauvedev.woodencog.recipes.heatedRecipes.recipes.HeatedPressingRecip
 import net.minecraft.world.Container;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.crafting.Recipe;
+import net.minecraft.world.item.crafting.RecipeHolder;
+import net.minecraft.world.item.crafting.SingleRecipeInput;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.entity.BlockEntity;
 //import net.minecraftforge.items.wrapper.RecipeWrapper;
@@ -21,15 +23,13 @@ import java.util.Optional;
 @Mixin(value = MechanicalPressBlockEntity.class, remap = false)
 public abstract class MixinMechanicalPressBlockEntity {
 
-    @Final
-    @Shadow private static RecipeWrapper pressingInv;
 
     /**
      * @author Manwe
      * @reason Also match heated compacting
      */
     @Inject( method = "matchStaticFilters", at = @At("RETURN"), cancellable = true)
-    protected <C extends Container> void matchStaticFilters(Recipe<C> recipe, CallbackInfoReturnable<Boolean> cir) {
+    protected <C extends Container> void matchStaticFilters(RecipeHolder<? extends Recipe<?>> recipe, CallbackInfoReturnable<Boolean> cir) {
         if(!cir.getReturnValue() && recipe.getType() == AllHeatedRecipeTypes.HEATED_COMPACTING.getType()) cir.setReturnValue(true);
     }
 
@@ -41,9 +41,20 @@ public abstract class MixinMechanicalPressBlockEntity {
     public void getRecipe(ItemStack item, CallbackInfoReturnable<Optional<PressingRecipe>> cir) {
         Level level = ((BlockEntity) (Object) this).getLevel();
         if (level != null) {
-            Optional<HeatedPressingRecipe> heatedPressingRecipe = AllHeatedRecipeTypes.HEATED_PRESSING.find(pressingInv, level);
+            Optional<HeatedPressingRecipe> heatedPressingRecipe = AllHeatedRecipeTypes.HEATED_PRESSING.find(new SingleRecipeInput(item), level);
             if (heatedPressingRecipe.isPresent())
                 cir.setReturnValue((Optional<PressingRecipe>) (Object) heatedPressingRecipe);
         }
     }
+    /*
+
+	public Optional<RecipeHolder<PressingRecipe>> getRecipe(ItemStack item) {
+		Optional<RecipeHolder<PressingRecipe>> assemblyRecipe =
+			SequencedAssemblyRecipe.getRecipe(level, item, AllRecipeTypes.PRESSING.getType(), PressingRecipe.class);
+		if (assemblyRecipe.isPresent())
+			return assemblyRecipe;
+
+		return AllRecipeTypes.PRESSING.find(new SingleRecipeInput(item), level);
+	}
+     */
 }

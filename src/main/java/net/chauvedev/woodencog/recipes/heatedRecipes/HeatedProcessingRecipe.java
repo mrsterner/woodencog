@@ -3,23 +3,25 @@ package net.chauvedev.woodencog.recipes.heatedRecipes;
 import com.google.gson.JsonObject;
 import com.simibubi.create.Create;
 //import com.simibubi.create.foundation.fluid.FluidIngredient;
+import com.simibubi.create.content.processing.recipe.ProcessingRecipe;
+import com.simibubi.create.content.processing.recipe.ProcessingRecipeParams;
 import com.simibubi.create.foundation.recipe.IRecipeTypeInfo;
 import net.chauvedev.woodencog.WoodenCog;
 import net.chauvedev.woodencog.recipes.heatedRecipes.output.DynamicProcessingOutput;
 import net.chauvedev.woodencog.utils.HeatHandlingUtil;
+import net.minecraft.core.HolderLookup;
 import net.minecraft.core.NonNullList;
 import net.minecraft.core.RegistryAccess;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.resources.ResourceLocation;
+import net.minecraft.util.RandomSource;
 import net.minecraft.world.Container;
 import net.minecraft.world.item.ItemStack;
-import net.minecraft.world.item.crafting.Ingredient;
-import net.minecraft.world.item.crafting.Recipe;
-import net.minecraft.world.item.crafting.RecipeSerializer;
-import net.minecraft.world.item.crafting.RecipeType;
+import net.minecraft.world.item.crafting.*;
 //import net.minecraftforge.fluids.FluidStack;
 import net.neoforged.neoforge.fluids.FluidStack;
 import net.neoforged.neoforge.fluids.crafting.FluidIngredient;
+import net.neoforged.neoforge.fluids.crafting.SizedFluidIngredient;
 import org.jetbrains.annotations.NotNull;
 import org.slf4j.Logger;
 
@@ -27,11 +29,12 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.function.Supplier;
 
-public abstract class HeatedProcessingRecipe<T extends Container> implements Recipe<T> {
+public abstract class HeatedProcessingRecipe<I extends RecipeInput> implements Recipe<I> {
+
     protected final ResourceLocation id;
     protected final NonNullList<Ingredient> ingredients;
     protected final NonNullList<DynamicProcessingOutput<?>> results;
-    protected final NonNullList<FluidIngredient> fluidIngredients;
+    protected final NonNullList<SizedFluidIngredient> fluidIngredients;
     protected final NonNullList<FluidStack> fluidResults;
     protected final int processingDuration;
     protected final WoodenCogHeatCondition requiredHeat;
@@ -41,6 +44,7 @@ public abstract class HeatedProcessingRecipe<T extends Container> implements Rec
     private Supplier<ItemStack> forcedResult = null;
 
     public HeatedProcessingRecipe(IRecipeTypeInfo typeInfo, HeatedProcessingRecipeBuilder.HeatedProcessingRecipeParams params) {
+ProcessingRecipe
         this.typeInfo = typeInfo;
         this.processingDuration = params.processingDuration;
         this.fluidIngredients = params.fluidIngredients;
@@ -118,7 +122,7 @@ public abstract class HeatedProcessingRecipe<T extends Container> implements Rec
         return this.ingredients;
     }
 
-    public NonNullList<FluidIngredient> getFluidIngredients() {
+    public NonNullList<SizedFluidIngredient> getFluidIngredients() {
         return this.fluidIngredients;
     }
 
@@ -134,22 +138,35 @@ public abstract class HeatedProcessingRecipe<T extends Container> implements Rec
         this.forcedResult = stack;
     }
 
-    public List<ItemStack> rollResults(List<ItemStack> usedItems) {
-        return this.rollResults(this.getRollableResults(), usedItems);
+    public List<ItemStack> rollResults(List<ItemStack> usedItems, RandomSource randomSource) {
+        return this.rollResults(this.getRollableResults(), usedItems, randomSource);
     }
 
-    public List<ItemStack> rollResults(List<DynamicProcessingOutput<?>> rollableResults, float temp) {
+    @Override
+    public ItemStack assemble(I t, HolderLookup.Provider provider) {
+        return getResultItem(provider);
+    }
+
+    @Override
+    public ItemStack getResultItem(HolderLookup.Provider provider) {
+        return getRollableResults().isEmpty() ? ItemStack.EMPTY
+                : getRollableResults().getFirst()
+                .getStack();
+    }
+
+
+    public List<ItemStack> rollResults(List<DynamicProcessingOutput<?>> rollableResults, float temp, RandomSource randomSource) {
         List<ItemStack> results = new ArrayList<>();
         for(int i = 0; i < rollableResults.size(); ++i) {
             DynamicProcessingOutput<?> output = rollableResults.get(i);
             DynamicProcessingOutput.setDynamicData(output,temp);
-            ItemStack stack = i == 0 && this.forcedResult != null ? this.forcedResult.get() : output.rollOutput();
+            ItemStack stack = i == 0 && this.forcedResult != null ? this.forcedResult.get() : output.rollOutput(randomSource);
             results.add(stack);
         }
         return results;
     }
 
-    public List<ItemStack> rollResults(List<DynamicProcessingOutput<?>> rollableResults, List<ItemStack> usedItems) {
+    public List<ItemStack> rollResults(List<DynamicProcessingOutput<?>> rollableResults, List<ItemStack> usedItems, RandomSource randomSource) {
         List<ItemStack> results = new ArrayList<>();
         for(int i = 0; i < rollableResults.size(); ++i) {
             DynamicProcessingOutput<?> output = rollableResults.get(i);
@@ -159,7 +176,7 @@ public abstract class HeatedProcessingRecipe<T extends Container> implements Rec
             } else {
                 DynamicProcessingOutput.setDynamicData(output, usedItems);
             }
-            ItemStack stack = i == 0 && this.forcedResult != null ? this.forcedResult.get() : output.rollOutput();
+            ItemStack stack = i == 0 && this.forcedResult != null ? this.forcedResult.get() : output.rollOutput(randomSource);
             results.add(stack);
         }
         return results;

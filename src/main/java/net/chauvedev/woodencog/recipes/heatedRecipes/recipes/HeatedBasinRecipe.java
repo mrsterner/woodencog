@@ -1,6 +1,7 @@
 package net.chauvedev.woodencog.recipes.heatedRecipes.recipes;
 
 import com.simibubi.create.content.processing.basin.BasinBlockEntity;
+import com.simibubi.create.content.processing.basin.BasinRecipe;
 import com.simibubi.create.foundation.blockEntity.behaviour.filtering.FilteringBehaviour;
 import com.simibubi.create.foundation.blockEntity.behaviour.fluid.SmartFluidTankBehaviour;
 //import com.simibubi.create.foundation.fluid.FluidIngredient;
@@ -14,11 +15,14 @@ import net.chauvedev.woodencog.recipes.heatedRecipes.HeatedProcessingRecipeBuild
 import net.chauvedev.woodencog.blockEntities.BasinBlockEntityExtended;
 import net.chauvedev.woodencog.utils.CogUtil;
 import net.createmod.catnip.data.Iterate;
+import net.minecraft.core.HolderLookup;
 import net.minecraft.world.Container;
 import net.minecraft.world.inventory.CraftingContainer;
 import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.crafting.CraftingRecipe;
 import net.minecraft.world.item.crafting.Ingredient;
 import net.minecraft.world.item.crafting.Recipe;
+import net.minecraft.world.item.crafting.RecipeInput;
 import net.minecraft.world.level.Level;
 import net.neoforged.neoforge.fluids.FluidStack;
 import net.neoforged.neoforge.fluids.capability.IFluidHandler;
@@ -32,7 +36,7 @@ import net.neoforged.neoforge.items.IItemHandler;
 import javax.annotation.Nonnull;
 import java.util.*;
 
-public class HeatedBasinRecipe extends HeatedProcessingRecipe<Container> {
+public class HeatedBasinRecipe extends HeatedProcessingRecipe<RecipeInput> {
 
     public static boolean match(BasinBlockEntity basin, Recipe<?> recipe) {
         FilteringBehaviour filter = basin.getFilter();
@@ -161,9 +165,9 @@ public class HeatedBasinRecipe extends HeatedProcessingRecipe<Container> {
                                 extractedItems.add(used);
                             }
                         }
-                        recipeOutputItems.addAll(heatedRecipe.rollResults(extractedItems));
+                        recipeOutputItems.addAll(heatedRecipe.rollResults(extractedItems, basin.getLevel().random));
                     } else {
-                        recipeOutputItems.addAll(heatedRecipe.rollResults(null));
+                        recipeOutputItems.addAll(heatedRecipe.rollResults(null, basin.getLevel().random));
                     }
 
 
@@ -224,7 +228,7 @@ public class HeatedBasinRecipe extends HeatedProcessingRecipe<Container> {
     }
 
     @Override
-    public boolean matches(Container inv, @Nonnull Level worldIn) {
+    public boolean matches(RecipeInput recipeInput, Level level) {
         return false;
     }
 }

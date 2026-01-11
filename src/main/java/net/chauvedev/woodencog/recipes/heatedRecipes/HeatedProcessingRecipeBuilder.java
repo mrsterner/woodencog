@@ -28,7 +28,7 @@ import net.neoforged.neoforge.common.conditions.ICondition;
 import net.neoforged.neoforge.common.conditions.ModLoadedCondition;
 import net.neoforged.neoforge.common.conditions.NotCondition;
 import net.neoforged.neoforge.fluids.FluidStack;
-import net.neoforged.neoforge.fluids.crafting.FluidIngredient;
+import net.neoforged.neoforge.fluids.crafting.SizedFluidIngredient;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.ArrayList;
@@ -65,7 +65,7 @@ public class HeatedProcessingRecipeBuilder<T extends HeatedProcessingRecipe<?>> 
     }
 
     public HeatedProcessingRecipeBuilder<T> withFluidIngredients(FluidIngredient... ingredients) {
-        return this.withFluidIngredients(NonNullList.of(FluidIngredient.empty(), ingredients));
+        return this.withFluidIngredients(NonNullList.of(FluidIngredient.EMPTY, ingredients));
     }
 
     public HeatedProcessingRecipeBuilder<T> withFluidIngredients(NonNullList<FluidIngredient> ingredients) {
@@ -205,7 +205,7 @@ public class HeatedProcessingRecipeBuilder<T extends HeatedProcessingRecipe<?>> 
         protected ResourceLocation id;
         protected NonNullList<Ingredient> ingredients;
         protected NonNullList<DynamicProcessingOutput<?>> results;
-        protected NonNullList<FluidIngredient> fluidIngredients;
+        protected NonNullList<SizedFluidIngredient> fluidIngredients;
         protected NonNullList<FluidStack> fluidResults;
         protected int processingDuration;
         protected WoodenCogHeatCondition requiredHeat;

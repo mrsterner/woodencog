@@ -13,6 +13,7 @@ import net.minecraft.core.HolderLookup;
 import net.minecraft.data.PackOutput;
 import net.minecraft.world.item.DyeColor;
 import net.minecraft.world.item.Item;
+import net.minecraft.world.level.material.FlowingFluid;
 import net.minecraft.world.level.material.Fluid;
 import net.minecraft.world.level.material.Fluids;
 
@@ -48,19 +49,19 @@ public class WoodenCogMixingRecipeGen extends MixingRecipeGen {
             .output(getSimpleFluid(SimpleFluid.LYE), 1000)),
 
     LYE_RAW_ALABASTER = create("lye_raw_alabaster", b ->
-            b.require(getSimpleFluid(SimpleFluid.LYE), 25)
+            b.require(getSimpleFlowingFluid(SimpleFluid.LYE), 25)
             .require(ModTags.Items.COLORED_RAW_ALABASTER)
             .output(TFCBlocks.PLAIN_ALABASTER.get())
             .duration(600)),
 
     LYE_ALABASTER_BRICKS = create("lye_alabaster_bricks", b ->
-            b.require(getSimpleFluid(SimpleFluid.LYE), 25)
+            b.require(getSimpleFlowingFluid(SimpleFluid.LYE), 25)
             .require(ModTags.Items.COLORED_BRICKS_ALABASTER)
             .output(TFCBlocks.PLAIN_ALABASTER_BRICKS.get())
             .duration(600)),
 
     LYE_POLISHED_ALABASTER = create("lye_polished_alabaster", b ->
-            b.require(getSimpleFluid(SimpleFluid.LYE), 25)
+            b.require(getSimpleFlowingFluid(SimpleFluid.LYE), 25)
             .require(ModTags.Items.COLORED_POLISHED_ALABASTER)
             .output(TFCBlocks.PLAIN_POLISHED_ALABASTER.get())
             .duration(600));
@@ -97,5 +98,9 @@ public class WoodenCogMixingRecipeGen extends MixingRecipeGen {
 
     private Fluid getSimpleFluid(SimpleFluid fluid) {
         return TFCFluids.SIMPLE_FLUIDS.get(fluid).getSource();
+    }
+
+    private FlowingFluid getSimpleFlowingFluid(SimpleFluid fluid) {
+        return TFCFluids.SIMPLE_FLUIDS.get(fluid).getFlowing();
     }
 }

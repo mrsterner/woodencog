@@ -2,13 +2,17 @@ package net.chauvedev.woodencog.recipes.heatedRecipes.recipes;
 
 import com.simibubi.create.Create;
 import com.simibubi.create.compat.jei.category.sequencedAssembly.SequencedAssemblySubCategory;
+import com.simibubi.create.content.kinetics.press.PressingRecipe;
 import com.simibubi.create.content.processing.sequenced.IAssemblyRecipe;
 import net.chauvedev.woodencog.recipes.heatedRecipes.AllHeatedRecipeTypes;
 import net.chauvedev.woodencog.recipes.heatedRecipes.HeatedProcessingRecipe;
 import net.chauvedev.woodencog.recipes.heatedRecipes.HeatedProcessingRecipeBuilder;
+import net.minecraft.core.HolderLookup;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.network.chat.Component;
+import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.crafting.Ingredient;
+import net.minecraft.world.item.crafting.SingleRecipeInput;
 import net.minecraft.world.level.ItemLike;
 import net.minecraft.world.level.Level;
 //import net.minecraftforge.api.distmarker.Dist;
@@ -25,14 +29,14 @@ import java.util.List;
 import java.util.Set;
 import java.util.function.Supplier;
 
-public class HeatedPressingRecipe extends HeatedProcessingRecipe<RecipeWrapper> implements IAssemblyRecipe {
+public class HeatedPressingRecipe extends HeatedProcessingRecipe<SingleRecipeInput> implements IAssemblyRecipe {
 
     public HeatedPressingRecipe(HeatedProcessingRecipeBuilder.HeatedProcessingRecipeParams params) {
         super(AllHeatedRecipeTypes.HEATED_PRESSING, params);
     }
 
     @Override
-    public boolean matches(RecipeWrapper inv, @NotNull Level worldIn) {
+    public boolean matches(SingleRecipeInput inv, @NotNull Level worldIn) {
         if (inv.isEmpty())
             return false;
         return ingredients.get(0).test(inv.getItem(0));

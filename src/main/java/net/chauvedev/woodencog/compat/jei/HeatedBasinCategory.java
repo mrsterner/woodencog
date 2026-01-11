@@ -20,6 +20,7 @@ import net.dries007.tfc.common.blocks.TFCBlocks;
 //import net.dries007.tfc.common.capabilities.heat.Heat;
 //import net.dries007.tfc.common.capabilities.heat.HeatCapability;
 //import net.dries007.tfc.common.recipes.ingredients.HeatableIngredient;
+import net.dries007.tfc.common.recipes.ingredients.HeatIngredient;
 import net.dries007.tfc.common.component.heat.HeatCapability;
 import net.dries007.tfc.util.Helpers;
 import net.minecraft.client.Minecraft;

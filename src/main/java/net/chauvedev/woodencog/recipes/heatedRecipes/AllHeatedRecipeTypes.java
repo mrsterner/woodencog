@@ -1,5 +1,6 @@
 package net.chauvedev.woodencog.recipes.heatedRecipes;
 
+import com.simibubi.create.AllRecipeTypes;
 import com.simibubi.create.AllTags;
 import com.simibubi.create.foundation.recipe.IRecipeTypeInfo;
 import net.chauvedev.woodencog.WoodenCog;
@@ -15,6 +16,7 @@ import net.minecraft.world.level.Level;
 //import net.minecraftforge.registries.ForgeRegistries;
 //import net.minecraftforge.registries.RegistryObject;
 import net.neoforged.bus.api.IEventBus;
+import net.neoforged.neoforge.registries.DeferredHolder;
 import net.neoforged.neoforge.registries.DeferredRegister;
 import org.jetbrains.annotations.Nullable;
 
@@ -30,12 +32,13 @@ public enum AllHeatedRecipeTypes implements IRecipeTypeInfo {
 
     public static final Predicate<? super Recipe<?>> CAN_BE_AUTOMATED = (r) -> !r.getId().getPath().endsWith("_manual_only");
     private final ResourceLocation id;
-    private final RegistryObject<RecipeSerializer<?>> serializerObject;
-    private final @Nullable RegistryObject<RecipeType<?>> typeObject;
+    private final DeferredHolder<RecipeSerializer<?>, RecipeSerializer<?>> serializerObject;
+    private final @Nullable DeferredHolder<RecipeType<?>, RecipeType<?>> typeObject;
     private final Supplier<RecipeType<?>> type;
 
     AllHeatedRecipeTypes(Supplier<RecipeSerializer<?>> serializerSupplier, Supplier<RecipeType<?>> typeSupplier, boolean registerType) {
         String name = this.name().toLowerCase();
+
         this.id = WoodenCog.asResource(name);
         this.serializerObject = Registers.SERIALIZER_REGISTER.register(name, serializerSupplier);
         if (registerType) {
@@ -87,8 +90,9 @@ public enum AllHeatedRecipeTypes implements IRecipeTypeInfo {
         return (RecipeType<T>) type.get();
     }
 
-    public <C extends Container, T extends Recipe<C>> Optional<T> find(C inv, Level world) {
-        return world.getRecipeManager().getRecipeFor(this.getType(), inv, world);
+    public <I extends RecipeInput, R extends Recipe<I>> Optional<RecipeHolder<R>> find(I inv, Level world) {
+        return world.getRecipeManager()
+                .getRecipeFor(getType(), inv, world);
     }
 
     public static boolean shouldIgnoreInAutomation(Recipe<?> recipe) {

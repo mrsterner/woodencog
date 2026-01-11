@@ -6,7 +6,6 @@ import net.chauvedev.woodencog.config.WoodenCogCommonConfigs;
 import net.chauvedev.woodencog.utils.CogUtil;
 import net.dries007.tfc.common.blockentities.rotation.RotatingBlockEntity;
 import net.dries007.tfc.common.blockentities.rotation.WindmillBlockEntity;
-import net.dries007.tfc.common.capabilities.Capabilities;
 import net.dries007.tfc.common.items.TFCItems;
 import net.dries007.tfc.util.Helpers;
 import net.dries007.tfc.util.rotation.SourceNode;
@@ -17,7 +16,8 @@ import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.entity.BlockEntityType;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.block.state.properties.BlockStateProperties;
-import net.minecraftforge.items.IItemHandler;
+import net.neoforged.neoforge.capabilities.Capabilities;
+import net.neoforged.neoforge.items.IItemHandler;
 
 public class WoodenGeneratorBlockEntity extends GeneratingKineticBlockEntity {
 
@@ -51,7 +51,7 @@ public class WoodenGeneratorBlockEntity extends GeneratingKineticBlockEntity {
         if(be instanceof RotatingBlockEntity rotatingBlock && rotatingBlock.getRotationNode() instanceof SourceNode sourceNode) {
             this.speed = - CogUtil.toRPM(sourceNode.rotation().speed());
             if(rotatingBlock instanceof WindmillBlockEntity windmill){
-                IItemHandler inventory = Helpers.getCapability(windmill, Capabilities.ITEM);
+                IItemHandler inventory = Helpers.getCapability(Capabilities.ItemHandler.BLOCK, windmill);
                 int rusticWindmillCount = 0;
                 if(inventory != null){
                     for(int i = 0; i < inventory.getSlots(); i++){

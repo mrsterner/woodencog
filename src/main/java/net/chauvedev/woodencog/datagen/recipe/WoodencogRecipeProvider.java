@@ -14,11 +14,12 @@ import net.chauvedev.woodencog.utils.CogUtil;
 import net.chauvedev.woodencog.utils.ItemAccess;
 import net.chauvedev.woodencog.utils.FluidAccess;
 import net.chauvedev.woodencog.utils.ModTags;
-import net.dries007.tfc.common.capabilities.heat.Heat;
+import net.dries007.tfc.common.component.heat.Heat;
 import net.dries007.tfc.common.items.Food;
 import net.dries007.tfc.common.items.TFCItems;
 import net.dries007.tfc.util.Metal;
 import net.minecraft.core.HolderLookup;
+import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.data.CachedOutput;
 import net.minecraft.data.DataGenerator;
@@ -36,6 +37,8 @@ import net.minecraft.world.item.crafting.Ingredient;
 import net.minecraft.world.level.material.Fluid;
 import net.minecraft.world.level.material.Fluids;
 
+import net.neoforged.neoforge.fluids.FluidStack;
+
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.CompletableFuture;
@@ -45,8 +48,9 @@ public class WoodencogRecipeProvider extends RecipeProvider {
 
     public WoodencogRecipeProvider(DataGenerator generator, PackOutput pOutput, CompletableFuture<HolderLookup.Provider> completableFuture) {
         super(pOutput, completableFuture);
-        registerAllProcessing(generator,pOutput);
+        registerAllProcessing(generator,pOutput, completableFuture);
     }
+    
 
     @Override
     protected void buildRecipes(Consumer<RecipeOutput> consumer) {
@@ -63,115 +67,115 @@ public class WoodencogRecipeProvider extends RecipeProvider {
         // BISMUTH BRONZE (ya convertido)
         new HeatedProcessingRecipeBuilder<>(HeatedMixingRecipe::new)
                 .withFluidIngredients(
-                        FluidIngredient.fromFluid(FluidAccess.bismuth, 20),
-                        FluidIngredient.fromFluid(FluidAccess.zinc, 30),
-                        FluidIngredient.fromFluid(FluidAccess.copper, 50))
+                        new FluidStack(FluidAccess.bismuth, 20),
+                        new FluidStack(FluidAccess.zinc, 30),
+                        new FluidStack(FluidAccess.copper, 50))
                 .withFluidOutputs(new FluidStack(FluidAccess.bismuthBronze, 100))
                 .requiresHeat(WoodenCogHeatCondition.of(600))
                 .duration(400)
-                .build(consumer, alloyingRecipeResourceLocation(Metal.Default.BISMUTH_BRONZE));
+                .build(consumer, alloyingRecipeResourceLocation(Metal.BISMUTH_BRONZE));
 
         // BLACK BRONZE
         new HeatedProcessingRecipeBuilder<>(HeatedMixingRecipe::new)
                 .withFluidIngredients(
-                        FluidIngredient.fromFluid(FluidAccess.silver, 25),
-                        FluidIngredient.fromFluid(FluidAccess.gold, 25),
-                        FluidIngredient.fromFluid(FluidAccess.copper, 50))
+                        new FluidStack(FluidAccess.silver, 25),
+                        new FluidStack(FluidAccess.gold, 25),
+                        new FluidStack(FluidAccess.copper, 50))
                 .withFluidOutputs(new FluidStack(FluidAccess.blackBronze, 100))
                 .requiresHeat(WoodenCogHeatCondition.of(600))
                 .duration(400)
-                .build(consumer, alloyingRecipeResourceLocation(Metal.Default.BLACK_BRONZE));
+                .build(consumer, alloyingRecipeResourceLocation(Metal.BLACK_BRONZE));
 
         // BRASS
         new HeatedProcessingRecipeBuilder<>(HeatedMixingRecipe::new)
                 .withFluidIngredients(
-                        FluidIngredient.fromFluid(FluidAccess.copper, 90),
-                        FluidIngredient.fromFluid(FluidAccess.zinc, 10))
+                        new FluidStack(FluidAccess.copper, 90),
+                        new FluidStack(FluidAccess.zinc, 10))
                 .withFluidOutputs(
                         new FluidStack(FluidAccess.brass, 100))
                 .requiresHeat(WoodenCogHeatCondition.of(600))
                 .duration(400)
-                .build(consumer, alloyingRecipeResourceLocation(Metal.Default.BRASS));
+                .build(consumer, alloyingRecipeResourceLocation(Metal.BRASS));
 
         // BRONZE
         new HeatedProcessingRecipeBuilder<>(HeatedMixingRecipe::new)
                 .withFluidIngredients(
-                        FluidIngredient.fromFluid(FluidAccess.copper, 90),
-                        FluidIngredient.fromFluid(FluidAccess.tin, 10))
+                        new FluidStack(FluidAccess.copper, 90),
+                        new FluidStack(FluidAccess.tin, 10))
                 .withFluidOutputs(
                         new FluidStack(FluidAccess.bronze, 100))
                 .requiresHeat(WoodenCogHeatCondition.of(600))
                 .duration(400)
-                .build(consumer, alloyingRecipeResourceLocation(Metal.Default.BRONZE));
+                .build(consumer, alloyingRecipeResourceLocation(Metal.BRONZE));
 
         // ROSE GOLD
         new HeatedProcessingRecipeBuilder<>(HeatedMixingRecipe::new)
                 .withFluidIngredients(
-                        FluidIngredient.fromFluid(FluidAccess.gold, 70),
-                        FluidIngredient.fromFluid(FluidAccess.copper, 30))
+                        new FluidStack(FluidAccess.gold, 70),
+                        new FluidStack(FluidAccess.copper, 30))
                 .withFluidOutputs(new FluidStack(FluidAccess.roseGold, 100))
                 .requiresHeat(WoodenCogHeatCondition.of(600))
                 .duration(400)
-                .build(consumer, alloyingRecipeResourceLocation(Metal.Default.ROSE_GOLD));
+                .build(consumer, alloyingRecipeResourceLocation(Metal.ROSE_GOLD));
 
         // STERLING SILVER
         new HeatedProcessingRecipeBuilder<>(HeatedMixingRecipe::new)
                 .withFluidIngredients(
-                        FluidIngredient.fromFluid(FluidAccess.silver, 60),
-                        FluidIngredient.fromFluid(FluidAccess.copper, 40))
+                        new FluidStack(FluidAccess.silver, 60),
+                        new FluidStack(FluidAccess.copper, 40))
                 .withFluidOutputs(new FluidStack(FluidAccess.sterlingSilver, 100))
                 .requiresHeat(WoodenCogHeatCondition.of(600))
                 .duration(400)
-                .build(consumer, alloyingRecipeResourceLocation(Metal.Default.STERLING_SILVER));
+                .build(consumer, alloyingRecipeResourceLocation(Metal.STERLING_SILVER));
 
         // WEAK BLUE STEEL
         new HeatedProcessingRecipeBuilder<>(HeatedMixingRecipe::new)
                 .withFluidIngredients(
-                        FluidIngredient.fromFluid(FluidAccess.blackSteel, 50),
-                        FluidIngredient.fromFluid(FluidAccess.steel, 20),
-                        FluidIngredient.fromFluid(FluidAccess.bismuthBronze, 15),
-                        FluidIngredient.fromFluid(FluidAccess.sterlingSilver, 15))
+                        new FluidStack(FluidAccess.blackSteel, 50),
+                        new FluidStack(FluidAccess.steel, 20),
+                        new FluidStack(FluidAccess.bismuthBronze, 15),
+                        new FluidStack(FluidAccess.sterlingSilver, 15))
                 .withFluidOutputs(
                         new FluidStack(FluidAccess.weakBlueSteel, 100))
                 .requiresHeat(WoodenCogHeatCondition.of(600))
                 .duration(400)
-                .build(consumer, alloyingRecipeResourceLocation(Metal.Default.WEAK_BLUE_STEEL));
+                .build(consumer, alloyingRecipeResourceLocation(Metal.WEAK_BLUE_STEEL));
 
         // WEAK RED STEEL
         new HeatedProcessingRecipeBuilder<>(HeatedMixingRecipe::new)
                 .withFluidIngredients(
-                        FluidIngredient.fromFluid(FluidAccess.blackSteel, 50),
-                        FluidIngredient.fromFluid(FluidAccess.steel, 20),
-                        FluidIngredient.fromFluid(FluidAccess.brass, 15),
-                        FluidIngredient.fromFluid(FluidAccess.roseGold, 15))
+                        new FluidStack(FluidAccess.blackSteel, 50),
+                        new FluidStack(FluidAccess.steel, 20),
+                        new FluidStack(FluidAccess.brass, 15),
+                        new FluidStack(FluidAccess.roseGold, 15))
                 .withFluidOutputs(
                         new FluidStack(FluidAccess.weakRedSteel, 100))
                 .requiresHeat(WoodenCogHeatCondition.of(600))
                 .duration(400)
-                .build(consumer, alloyingRecipeResourceLocation(Metal.Default.WEAK_RED_STEEL));
+                .build(consumer, alloyingRecipeResourceLocation(Metal.WEAK_RED_STEEL));
 
         // WEAK STEEL
         new HeatedProcessingRecipeBuilder<>(HeatedMixingRecipe::new)
                 .withFluidIngredients(
-                        FluidIngredient.fromFluid(FluidAccess.steel, 50),
-                        FluidIngredient.fromFluid(FluidAccess.nickel, 25),
-                        FluidIngredient.fromFluid(FluidAccess.blackBronze, 25))
+                        new FluidStack(FluidAccess.steel, 50),
+                        new FluidStack(FluidAccess.nickel, 25),
+                        new FluidStack(FluidAccess.blackBronze, 25))
                 .withFluidOutputs(
                         new FluidStack(FluidAccess.weakSteel, 100))
                 .requiresHeat(WoodenCogHeatCondition.of(600))
                 .duration(400)
-                .build(consumer, alloyingRecipeResourceLocation(Metal.Default.WEAK_STEEL));
+                .build(consumer, alloyingRecipeResourceLocation(Metal.WEAK_STEEL));
     }
 
     private void oreMeltingRecipes(Consumer<RecipeOutput> consumer){
 
         DataGenStaticData.ORE_REGISTRY.forEach(ore -> {
-            Item smallOre = ForgeRegistries.ITEMS.getValue(TFCOreResourceLocation("small_"+ore.oreId()));
-            Item poorOre = ForgeRegistries.ITEMS.getValue(TFCOreResourceLocation("poor_"+ore.oreId()));
-            Item normalOre = ForgeRegistries.ITEMS.getValue(TFCOreResourceLocation("normal_"+ore.oreId()));
-            Item richOre = ForgeRegistries.ITEMS.getValue(TFCOreResourceLocation("rich_"+ore.oreId()));
+            Item smallOre = BuiltInRegistries.ITEM.get(TFCOreResourceLocation("small_"+ore.oreId()));
+            Item poorOre = BuiltInRegistries.ITEM.get(TFCOreResourceLocation("poor_"+ore.oreId()));
+            Item normalOre = BuiltInRegistries.ITEM.get(TFCOreResourceLocation("normal_"+ore.oreId()));
+            Item richOre = BuiltInRegistries.ITEM.get(TFCOreResourceLocation("rich_"+ore.oreId()));
 
-            Fluid metal = ForgeRegistries.FLUIDS.getValue(TFCMetalResourceLocation(ore.metalId()));
+            Fluid metal = BuiltInRegistries.FLUID.get(TFCMetalResourceLocation(ore.metalId()));
 
             if(CogUtil.logConditional(metal == null,this.getClass(),"DataGen, metal is null can't generate melting recipes")) return;
 
@@ -204,10 +208,10 @@ public class WoodencogRecipeProvider extends RecipeProvider {
 
     private void metalRecipes(Consumer<RecipeOutput> consumer){
         DataGenStaticData.METAL_REGISTRY.values().forEach(metal -> {
-            Item ingot = ForgeRegistries.ITEMS.getValue(TFCIngotResourceLocation(metal.id()));
-            Fluid fluidMetal = ForgeRegistries.FLUIDS.getValue(TFCMetalResourceLocation(metal.id()));
-            Item sheet = ForgeRegistries.ITEMS.getValue(TFCSheetIngotResourceLocation(metal.id()));
-            Item doubleIngot = ForgeRegistries.ITEMS.getValue(TFCDoubleIngotResourceLocation(metal.id()));
+            Item ingot = BuiltInRegistries.ITEM.get(TFCIngotResourceLocation(metal.id()));
+            Fluid fluidMetal = BuiltInRegistries.FLUID.get(TFCMetalResourceLocation(metal.id()));
+            Item sheet = BuiltInRegistries.ITEM.get(TFCSheetIngotResourceLocation(metal.id()));
+            Item doubleIngot = BuiltInRegistries.ITEM.get(TFCDoubleIngotResourceLocation(metal.id()));
 
             //Ingot melting recipes
             new HeatedProcessingRecipeBuilder<>(HeatedMixingRecipe::new)
@@ -295,7 +299,7 @@ public class WoodencogRecipeProvider extends RecipeProvider {
                 .withItemIngredients(
                         FoodIngredient.of(Ingredient.of(new ItemStack(ItemAccess.egg))))
                 .withFluidIngredients(
-                        FluidIngredient.fromFluid(Fluids.WATER.getFlowing(),100))
+                        new FluidStack(Fluids.WATER.getFlowing(),100))
                 .withItemOutputs(
                         FoodProcessingOutput.Builder.create().withItem(ItemAccess.boiledEgg, 1).build())
                 .requiresHeat(WoodenCogHeatCondition.of(150))
@@ -305,7 +309,7 @@ public class WoodencogRecipeProvider extends RecipeProvider {
                 .withItemIngredients(
                         FoodIngredient.of(Ingredient.of(new ItemStack(ItemAccess.riceGrain))))
                 .withFluidIngredients(
-                        FluidIngredient.fromFluid(Fluids.WATER.getFlowing(),100))
+                        new FluidStack(Fluids.WATER.getFlowing(),100))
                 .withItemOutputs(
                         FoodProcessingOutput.Builder.create().withItem(ItemAccess.cookedRice, 1).build())
                 .requiresHeat(WoodenCogHeatCondition.of(150))
@@ -336,7 +340,7 @@ public class WoodencogRecipeProvider extends RecipeProvider {
                         FoodIngredient.of(Ingredient.of(usableInSoup)),
                         FoodIngredient.of(Ingredient.of(usableInSoup)),
                         FoodIngredient.of(Ingredient.of(usableInSoup)))
-                .withFluidIngredients(FluidIngredient.fromFluid(Fluids.WATER.getFlowing(),100))
+                .withFluidIngredients(new FluidStack(Fluids.WATER.getFlowing(),100))
                 .withItemOutputs(new SoupProcessingOutput(Items.BOWL,3,1))
                 .requiresHeat(WoodenCogHeatCondition.of(150))
                 .duration(500)
@@ -365,7 +369,7 @@ public class WoodencogRecipeProvider extends RecipeProvider {
                         FoodIngredient.of(Ingredient.of(usableInSoup)),
                         FoodIngredient.of(Ingredient.of(usableInSoup)),
                         FoodIngredient.of(Ingredient.of(usableInSoup)))
-                .withFluidIngredients(FluidIngredient.fromFluid(Fluids.WATER.getFlowing(),100))
+                .withFluidIngredients(new FluidStack(Fluids.WATER.getFlowing(),100))
                 .withItemOutputs(new SoupProcessingOutput(ItemAccess.ceramicBowl,3,1))
                 .requiresHeat(WoodenCogHeatCondition.of(150))
                 .duration(500)
@@ -388,7 +392,7 @@ public class WoodencogRecipeProvider extends RecipeProvider {
                             FoodIngredient.of(Ingredient.of(TFCItems.EMPTY_JAR_WITH_LID.get())),
                             FoodIngredient.of(Ingredient.of(fruit)),
                             FoodIngredient.of(Ingredient.of(fruit)))
-                    .withFluidIngredients(FluidIngredient.fromFluid(Fluids.WATER.getFlowing(),100))
+                    .withFluidIngredients(new FluidStack(Fluids.WATER.getFlowing(),100))
                     .withItemOutputs(output2)
                     .requiresHeat(WoodenCogHeatCondition.of(104))
                     .duration(4000)
@@ -406,7 +410,7 @@ public class WoodencogRecipeProvider extends RecipeProvider {
                             FoodIngredient.of(Ingredient.of(fruit)),
                             FoodIngredient.of(Ingredient.of(fruit)),
                             FoodIngredient.of(Ingredient.of(fruit)))
-                    .withFluidIngredients(FluidIngredient.fromFluid(Fluids.WATER.getFlowing(),100))
+                    .withFluidIngredients(new FluidStack(Fluids.WATER.getFlowing(),100))
                     .withItemOutputs(output3)
                     .requiresHeat(WoodenCogHeatCondition.of(104))
                     .duration(4000)
@@ -426,7 +430,7 @@ public class WoodencogRecipeProvider extends RecipeProvider {
                             FoodIngredient.of(Ingredient.of(fruit)),
                             FoodIngredient.of(Ingredient.of(fruit)),
                             FoodIngredient.of(Ingredient.of(fruit)))
-                    .withFluidIngredients(FluidIngredient.fromFluid(Fluids.WATER.getFlowing(),100))
+                    .withFluidIngredients(new FluidStack(Fluids.WATER.getFlowing(),100))
                     .withItemOutputs(output4)
                     .requiresHeat(WoodenCogHeatCondition.of(104))
                     .duration(4000)
@@ -438,7 +442,7 @@ public class WoodencogRecipeProvider extends RecipeProvider {
         return WoodenCog.asResource("heated_mixing/dyeing_"+dyeColor.getSerializedName());
     }
 
-    private static ResourceLocation alloyingRecipeResourceLocation(Metal.Default metalEnum) {
+    private static ResourceLocation alloyingRecipeResourceLocation(Metal metalEnum) {
         return WoodenCog.asResource("alloying_"+metalEnum.getSerializedName());
     }
 
@@ -446,7 +450,7 @@ public class WoodencogRecipeProvider extends RecipeProvider {
         return WoodenCog.asResource(oreId+"_to_liquid");
     }
 
-    private static ResourceLocation TFCMetalResourceLocation(Metal.Default metalEnum) {
+    private static ResourceLocation TFCMetalResourceLocation(Metal metalEnum) {
         return ResourceLocation.tryBuild("tfc","metal/"+metalEnum.getSerializedName());
     }
 
@@ -473,11 +477,11 @@ public class WoodencogRecipeProvider extends RecipeProvider {
     static final List<ProcessingRecipeGen> GENERATORS = new ArrayList<>();
 
     //Create processing recipes
-    public static void registerAllProcessing(DataGenerator gen, PackOutput output) {
+    public static void registerAllProcessing(DataGenerator gen, PackOutput output, CompletableFuture<HolderLookup.Provider> completableFuture) {
 
-        GENERATORS.add(new WoodenCogCompactingRecipeGen(output));
-        GENERATORS.add(new WoodenCogCrushingRecipeGen(output));
-        GENERATORS.add(new WoodenCogMixingRecipeGen(output));
+        GENERATORS.add(new WoodenCogCompactingRecipeGen(output, completableFuture));
+        GENERATORS.add(new WoodenCogCrushingRecipeGen(output, completableFuture));
+        GENERATORS.add(new WoodenCogMixingRecipeGen(output, completableFuture));
 
         gen.addProvider(true, new DataProvider() {
 

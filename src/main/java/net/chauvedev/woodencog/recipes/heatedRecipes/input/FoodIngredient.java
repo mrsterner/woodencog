@@ -7,6 +7,7 @@ import net.chauvedev.woodencog.WoodenCog;
 //import net.dries007.tfc.common.recipes.ingredients.DelegateIngredient;
 import net.dries007.tfc.common.component.food.FoodCapability;
 import net.dries007.tfc.common.component.food.IFood;
+import net.dries007.tfc.common.recipes.ingredients.PreciseIngredient;
 import net.dries007.tfc.util.Helpers;
 //import net.dries007.tfc.util.JsonHelpers;
 import net.minecraft.network.FriendlyByteBuf;
@@ -14,9 +15,10 @@ import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.crafting.Ingredient;
 //import net.minecraftforge.common.crafting.IIngredientSerializer;
+import net.neoforged.neoforge.common.crafting.IngredientType;
 import org.jetbrains.annotations.Nullable;
 
-public class FoodIngredient extends DelegateIngredient {
+public class FoodIngredient implements PreciseIngredient {
 
     private final int copies;
 
@@ -42,12 +44,17 @@ public class FoodIngredient extends DelegateIngredient {
     }
 
     @Override
+    public IngredientType<?> getType() {
+        return null;
+    }
+
+    @Override
     protected @Nullable ItemStack testDefaultItem(ItemStack stack) {
         return super.testDefaultItem(stack);
     }
 
     @Override
-    public IIngredientSerializer<? extends DelegateIngredient> getSerializer() {
+    public IIngredientSerializer<? extends PreciseIngredient> getSerializer() {
         return Serializer.INSTANCE;
     }
 
