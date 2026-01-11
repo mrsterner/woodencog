@@ -7,6 +7,7 @@ import net.chauvedev.woodencog.mixin.blockEnitites.accessors.BlockEntityAccessor
 import net.chauvedev.woodencog.blockEntities.BlazeBurnerBlockentityExtended;
 import net.chauvedev.woodencog.utils.CogUtil;
 import net.dries007.tfc.common.component.heat.HeatCapability;
+import net.minecraft.core.Direction;
 import net.minecraft.world.level.Level;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
@@ -35,7 +36,9 @@ public abstract class MixinBlazeBurnerBlockEntity implements BlazeBurnerBlockent
 
         Level level = ((BlockEntityAccessor) this).getLevel();
         if(!level.isClientSide()){
-            HeatCapability.provideHeatTo(level, ((BlockEntityAccessor) this).getWorldPosition().above(), getTemperature());
+            for (Direction direction : Direction.values()) {
+                HeatCapability.provideHeatTo(level, ((BlockEntityAccessor) this).getWorldPosition().above(), direction, getTemperature());
+            }
         }
     }
 }

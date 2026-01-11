@@ -57,7 +57,6 @@ public class MixinFanProcessing {
     @Unique
     private static ItemStack applyTFCHeatingRecipe(ItemStack inputStack, IHeat cap){
         HeatingRecipe recipe = HeatingRecipe.getRecipe(inputStack);
-
         if (recipe!=null){
             if (recipe.isValidTemperature(cap.getTemperature())) {
                 ItemStack output = recipe.assemble(new ItemStackInventory(inputStack), null);

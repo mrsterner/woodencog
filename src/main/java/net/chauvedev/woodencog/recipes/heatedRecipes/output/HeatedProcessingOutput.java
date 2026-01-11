@@ -5,7 +5,6 @@ import com.mojang.brigadier.exceptions.CommandSyntaxException;
 import com.simibubi.create.Create;
 import net.chauvedev.woodencog.WoodenCog;
 import net.chauvedev.woodencog.config.WoodenCogCommonConfigs;
-import net.chauvedev.woodencog.recipes.heatedRecipes.HeatedProcessingRecipeBuilder;
 //import net.dries007.tfc.common.capabilities.heat.HeatCapability;
 import net.dries007.tfc.common.component.heat.HeatCapability;
 import net.minecraft.nbt.TagParser;

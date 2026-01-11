@@ -2,44 +2,35 @@ package net.chauvedev.woodencog.recipes.heatedRecipes.recipes;
 
 import com.simibubi.create.Create;
 import com.simibubi.create.compat.jei.category.sequencedAssembly.SequencedAssemblySubCategory;
-import com.simibubi.create.content.kinetics.press.PressingRecipe;
 import com.simibubi.create.content.processing.sequenced.IAssemblyRecipe;
 import net.chauvedev.woodencog.recipes.heatedRecipes.AllHeatedRecipeTypes;
-import net.chauvedev.woodencog.recipes.heatedRecipes.HeatedProcessingRecipe;
-import net.chauvedev.woodencog.recipes.heatedRecipes.HeatedProcessingRecipeBuilder;
-import net.minecraft.core.HolderLookup;
+import net.chauvedev.woodencog.recipes.heatedRecipes.HeatedProcessingRecipeParams;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.network.chat.Component;
-import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.crafting.Ingredient;
 import net.minecraft.world.item.crafting.SingleRecipeInput;
 import net.minecraft.world.level.ItemLike;
 import net.minecraft.world.level.Level;
-//import net.minecraftforge.api.distmarker.Dist;
-//import net.minecraftforge.api.distmarker.OnlyIn;
-//import net.minecraftforge.items.wrapper.RecipeWrapper;
-//import net.minecraftforge.registries.ForgeRegistries;
 import net.neoforged.api.distmarker.Dist;
 import net.neoforged.api.distmarker.OnlyIn;
-import net.neoforged.neoforge.items.wrapper.RecipeWrapper;
-import org.jetbrains.annotations.NotNull;
-
 
 import java.util.List;
 import java.util.Set;
 import java.util.function.Supplier;
 
-public class HeatedPressingRecipe extends HeatedProcessingRecipe<SingleRecipeInput> implements IAssemblyRecipe {
 
-    public HeatedPressingRecipe(HeatedProcessingRecipeBuilder.HeatedProcessingRecipeParams params) {
+public class HeatedPressingRecipe extends HeatedStandardProcessingRecipe<SingleRecipeInput>
+        implements IAssemblyRecipe {
+
+    public HeatedPressingRecipe(HeatedProcessingRecipeParams params) {
         super(AllHeatedRecipeTypes.HEATED_PRESSING, params);
     }
 
     @Override
-    public boolean matches(SingleRecipeInput inv, @NotNull Level worldIn) {
-        if (inv.isEmpty())
+    public boolean matches(SingleRecipeInput input, Level level) {
+        if (input.isEmpty())
             return false;
-        return ingredients.get(0).test(inv.getItem(0));
+        return ingredients.get(0).test(input.getItem(0));
     }
 
     @Override
@@ -53,14 +44,27 @@ public class HeatedPressingRecipe extends HeatedProcessingRecipe<SingleRecipeInp
     }
 
     @Override
-    public void addAssemblyIngredients(List<Ingredient> list) {}
+    protected boolean canRequireHeat() {
+        return true;
+    }
+
+    @Override
+    protected boolean canRequireExtraHeat() {
+        return true;
+    }
+
+    @Override
+    public void addAssemblyIngredients(List<Ingredient> list) {
+        // No additional ingredients needed for assembly
+    }
 
     @Override
     @OnlyIn(Dist.CLIENT)
     public Component getDescriptionForAssembly() {
-        return Component.translatable("recipe.assembly.pressing"); //Change to CreateLang in future create version
+        return Component.translatable("recipe.assembly.pressing");
     }
 
+    @Override
     public void addRequiredMachines(Set<ItemLike> list) {
         list.add(BuiltInRegistries.BLOCK.get(Create.asResource("mechanical_press")));
     }

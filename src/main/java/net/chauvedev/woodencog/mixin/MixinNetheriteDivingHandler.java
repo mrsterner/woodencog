@@ -20,7 +20,7 @@ public class MixinNetheriteDivingHandler {
     public static boolean isNetheriteArmor(ItemStack stack) {
         Item armor = stack.getItem();
         if (armor instanceof ArmorItem armorItem) {
-            return armorItem.getMaterial() == TFCArmorMaterials.RED_STEEL || armorItem.getMaterial() == ArmorMaterials.NETHERITE;
+            return armorItem.getMaterial() == TFCArmorMaterials.RED_STEEL.holder() || armorItem.getMaterial() == ArmorMaterials.NETHERITE;
         }
         return false;
     }

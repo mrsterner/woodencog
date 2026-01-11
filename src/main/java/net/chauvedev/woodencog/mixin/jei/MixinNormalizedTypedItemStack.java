@@ -1,7 +1,7 @@
 package net.chauvedev.woodencog.mixin.jei;
 
 import mezz.jei.api.ingredients.ITypedIngredient;
-//import mezz.jei.library.ingredients.itemStacks.NormalizedTypedItemStack;
+import mezz.jei.library.ingredients.itemStacks.NormalizedTypedItemStack;
 import net.chauvedev.woodencog.compat.jei.tfcGuiFix.HeatNormalizedTypedItemStack;
 import net.minecraft.world.item.ItemStack;
 import org.spongepowered.asm.mixin.Mixin;

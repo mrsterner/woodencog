@@ -36,7 +36,7 @@ public class MixinFillingBySpout {
         if (instance.find(inv, world).isPresent()){
             FillingRecipe recipe = (FillingRecipe) instance.find(inv, world).get();
 
-            boolean is_advanced_recipe = AllAdvancedRecipeTypes.CACHES.containsKey(recipe.getId().toString());
+            boolean is_advanced_recipe = AllAdvancedRecipeTypes.CACHES.containsKey(recipe.getTypeInfo().getId().toString());
             if(is_advanced_recipe && !(Objects.equals(recipe.getIngredients().get(0).getItems()[0].getTag(), stack.getTag())
                     || stack.getTag() == null || stack.getTag().isEmpty())) {
                 return Optional.empty();
@@ -54,7 +54,7 @@ public class MixinFillingBySpout {
     private static List<ItemStack> fillItem(FillingRecipe instance, RandomSource randomSource) {
         List<ItemStack> results = instance.rollResults(randomSource);
 
-        boolean is_advanced_recipe = AllAdvancedRecipeTypes.CACHES.containsKey(instance.getId().toString());
+        boolean is_advanced_recipe = AllAdvancedRecipeTypes.CACHES.containsKey(instance.getTypeInfo().getId().toString());
         if(is_advanced_recipe) {
             ArrayList<ItemStack> newStacks = new ArrayList<>();
 

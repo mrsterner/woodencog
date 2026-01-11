@@ -10,6 +10,7 @@ import net.chauvedev.woodencog.recipes.advancedProcessingRecipe.baseRecipes.SetI
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.world.item.crafting.RecipeSerializer;
 import net.neoforged.bus.api.IEventBus;
+import net.neoforged.neoforge.registries.DeferredHolder;
 import net.neoforged.neoforge.registries.DeferredRegister;
 //import net.minecraftforge.eventbus.api.IEventBus;
 //import net.minecraftforge.registries.DeferredRegister;
@@ -24,29 +25,27 @@ public enum AllAdvancedRecipeTypes {
     PRESSING(AllRecipeTypes.PRESSING, PressingRecipe::new),
     FILLING(AllRecipeTypes.FILLING, FillingRecipe::new);
 
-    private final RegistryObject<RecipeSerializer<?>> serializerObject;
+    private final DeferredHolder<RecipeSerializer<?>, RecipeSerializer<?>> serializerObject;
 
     public static final HashMap<String, SetItemStackProvider> CACHES = new HashMap<>();
 
 
-    AllAdvancedRecipeTypes(AllRecipeTypes type,Supplier<AdvancedRecipeSerializer<?>> serializerSupplier){
+    AllAdvancedRecipeTypes(AllRecipeTypes type, Supplier<AdvancedRecipeSerializer<?>> serializerSupplier){
         this.serializerObject = AllAdvancedRecipeTypes.Registers.SERIALIZER_REGISTER.register(this.name().toLowerCase(), serializerSupplier);
         WoodenCog.LOGGER.info("register convert recipe "+WoodenCog.MOD_ID+":"+this.name()+" to "+type.getId());
 
     }
-    AllAdvancedRecipeTypes(AllRecipeTypes type,ProcessingRecipeBuilder.ProcessingRecipeFactory processingFactory) {
-        this(type,() -> new AdvancedRecipeSerializer(processingFactory,type));
-    }
+
     public static void register(IEventBus modEventBus) {
         AllAdvancedRecipeTypes.Registers.SERIALIZER_REGISTER.register(modEventBus);
     }
 
-    public static <T extends ProcessingRecipe<?>> void registerRecipe(ProcessingRecipe tAdvancedRecipeSerializer,SetItemStackProvider provider) {
-        WoodenCog.LOGGER.info("[advancerecipe] registerRecipe for "+tAdvancedRecipeSerializer.getId());
-        if (CACHES.containsKey(tAdvancedRecipeSerializer.getId().toString())){
-            CACHES.replace(tAdvancedRecipeSerializer.getId().toString(),provider);
+    public static <T extends ProcessingRecipe<?, ?>> void registerRecipe(ProcessingRecipe tAdvancedRecipeSerializer,SetItemStackProvider provider) {
+        WoodenCog.LOGGER.info("[advancerecipe] registerRecipe for " + tAdvancedRecipeSerializer.getTypeInfo().getId());
+        if (CACHES.containsKey(tAdvancedRecipeSerializer.getTypeInfo().getId().toString())){
+            CACHES.replace(tAdvancedRecipeSerializer.getTypeInfo().getId().toString(),provider);
         }else{
-            CACHES.put(tAdvancedRecipeSerializer.getId().toString(),provider);
+            CACHES.put(tAdvancedRecipeSerializer.getTypeInfo().getId().toString(),provider);
         }
     }
 

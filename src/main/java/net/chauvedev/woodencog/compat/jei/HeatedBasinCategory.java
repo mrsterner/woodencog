@@ -20,6 +20,7 @@ import net.dries007.tfc.common.blocks.TFCBlocks;
 //import net.dries007.tfc.common.capabilities.heat.Heat;
 //import net.dries007.tfc.common.capabilities.heat.HeatCapability;
 //import net.dries007.tfc.common.recipes.ingredients.HeatableIngredient;
+import net.dries007.tfc.common.component.heat.Heat;
 import net.dries007.tfc.common.recipes.ingredients.HeatIngredient;
 import net.dries007.tfc.common.component.heat.HeatCapability;
 import net.dries007.tfc.util.Helpers;
@@ -29,7 +30,9 @@ import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.crafting.Ingredient;
 //import net.minecraftforge.fluids.FluidStack;
+import net.neoforged.neoforge.fluids.FluidStack;
 import net.neoforged.neoforge.fluids.crafting.FluidIngredient;
+import net.neoforged.neoforge.fluids.crafting.SizedFluidIngredient;
 import org.apache.commons.lang3.mutable.MutableInt;
 
 import javax.annotation.ParametersAreNonnullByDefault;
@@ -78,7 +81,7 @@ public abstract class HeatedBasinCategory extends WoodenCogRecipeCategory<Heated
             i++;
         }
 
-        for (FluidIngredient fluidIngredient : recipe.getFluidIngredients()) {
+        for (SizedFluidIngredient fluidIngredient : recipe.getFluidIngredients()) {
             builder
                     .addSlot(RecipeIngredientRole.INPUT, 17 + xOffset + (i % 3) * 19, 51 - (i / 3) * 19)
                     .setBackground(getRenderedSlot(), -1, -1)
@@ -118,12 +121,12 @@ public abstract class HeatedBasinCategory extends WoodenCogRecipeCategory<Heated
             builder
                     .addSlot(RecipeIngredientRole.OUTPUT, xPosition, yPosition)
                     .setBackground(getRenderedSlot(), -1, -1)
-                    .addIngredient(ForgeTypes.FLUID_STACK, withImprovedVisibility(fluidResult))
+                    .addIngredient(NeoForgeTypes.FLUID_STACK, withImprovedVisibility(fluidResult))
                     .addRichTooltipCallback(addFluidTooltip(fluidResult.getAmount()));
             i++;
         }
 
-        WoodenCogHeatCondition requiredHeat = recipe.getRequiredHeat();
+        WoodenCogHeatCondition requiredHeat = recipe.getExtraHeatCondition();
         if (requiredHeat.getTemperature() > 0) {
             builder.addSlot(RecipeIngredientRole.RENDER_ONLY, 134, 81).addItemStack(TFCBlocks.CHARCOAL_FORGE.get().asItem().getDefaultInstance());
         }
@@ -131,7 +134,7 @@ public abstract class HeatedBasinCategory extends WoodenCogRecipeCategory<Heated
 
     @Override
     public void draw(HeatedBasinRecipe recipe, IRecipeSlotsView recipeSlotsView, GuiGraphics guiGraphics, double mouseX, double mouseY) {
-        WoodenCogHeatCondition requiredHeat = recipe.getRequiredHeat();
+        WoodenCogHeatCondition requiredHeat = recipe.getExtraHeatCondition();
 
         boolean noHeat = !requiredHeat.hasTemp();
 

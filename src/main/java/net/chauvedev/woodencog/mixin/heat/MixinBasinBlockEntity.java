@@ -100,8 +100,8 @@ public abstract class MixinBasinBlockEntity implements BasinBlockEntityExtended 
     @Unique
     public void autoChainRecipes(){
         if(this.getSelectionMode().get() == BasinBlockEntityExtended.SelectionMode.AUTO_FEED){
-            IFluidHandler ouputHandler = ((BasinBlockEntityAccessor) this).getOutputTank().getCapability().resolve().get();
-            IFluidHandler inputHandler = this.inputTank.getCapability().resolve().get();
+            IFluidHandler ouputHandler = ((BasinBlockEntityAccessor) this).getOutputTank().getCapability();
+            IFluidHandler inputHandler = this.inputTank.getCapability();
 
             for(int slot = 0; slot < ouputHandler.getTanks(); ++slot) {
                 FluidStack fs = ouputHandler.getFluidInTank(slot).copy();
@@ -171,7 +171,7 @@ public abstract class MixinBasinBlockEntity implements BasinBlockEntityExtended 
         for(Heat heat : Heat.values()){
             if(temp > heat.getMin() && temp <= heat.getMax()){
                 color = heat.getColor();
-                displayName = heat.getDisplayName();
+                displayName = Component.literal(heat.name());
                 break;
             }
         }

@@ -16,8 +16,8 @@ import java.util.stream.Stream;
 public class HeatHandlingUtil {
 
     private static List<Integer> getMaterialProperties(ItemStack itemStack){
-        if(itemStack.hasTag()) {
-            CompoundTag compoundTag = itemStack.getTag();
+        if(itemStack.has(WoodenCog.GENERIC_TAG)) {
+            CompoundTag compoundTag = itemStack.get(WoodenCog.GENERIC_TAG);
             if(compoundTag == null) {
                 WoodenCog.LOGGER.warn("Null CompoundTag -> fallback to default");
                 return List.of(2700,897);

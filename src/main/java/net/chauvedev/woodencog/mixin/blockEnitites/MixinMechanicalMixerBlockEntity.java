@@ -32,7 +32,8 @@ public abstract class MixinMechanicalMixerBlockEntity {
      */
     @Inject( method = "matchStaticFilters", at = @At("RETURN"), cancellable = true)
     private <C extends Container> void matchStaticFilters(RecipeHolder<? extends Recipe<?>> recipe, CallbackInfoReturnable<Boolean> cir) {
-        if(!cir.getReturnValue() && recipe == AllHeatedRecipeTypes.HEATED_MIXING.getType()) cir.setReturnValue(true);
+        Recipe<?> r = recipe.value();
+        if(!cir.getReturnValue() && r.getType() == AllHeatedRecipeTypes.HEATED_MIXING.getType()) cir.setReturnValue(true);
     }
 
     /**
@@ -98,7 +99,7 @@ public abstract class MixinMechanicalMixerBlockEntity {
         float recipeSpeed = 1.0F;
         Recipe<?> currentRecipe = ((BasinOperatingBlockEntityAccessor) this).getCurrentRecipe();
 
-        if (currentRecipe instanceof ProcessingRecipe<?> processingRecipe) {
+        if (currentRecipe instanceof ProcessingRecipe<?, ?> processingRecipe) {
             int t = processingRecipe.getProcessingDuration();
             if (t != 0) {
                 recipeSpeed = (float)t / 100.0F;

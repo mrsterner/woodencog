@@ -1,65 +1,68 @@
 package net.chauvedev.woodencog.recipes.heatedRecipes;
 
-import com.google.gson.JsonObject;
-import com.simibubi.create.Create;
-//import com.simibubi.create.foundation.fluid.FluidIngredient;
+import com.google.common.base.Joiner;
+import com.mojang.serialization.DataResult;
+import com.mojang.serialization.MapCodec;
+import com.simibubi.create.content.processing.recipe.HeatCondition;
 import com.simibubi.create.content.processing.recipe.ProcessingRecipe;
-import com.simibubi.create.content.processing.recipe.ProcessingRecipeParams;
 import com.simibubi.create.foundation.recipe.IRecipeTypeInfo;
-import net.chauvedev.woodencog.WoodenCog;
 import net.chauvedev.woodencog.recipes.heatedRecipes.output.DynamicProcessingOutput;
 import net.chauvedev.woodencog.utils.HeatHandlingUtil;
+import net.minecraft.MethodsReturnNonnullByDefault;
 import net.minecraft.core.HolderLookup;
 import net.minecraft.core.NonNullList;
-import net.minecraft.core.RegistryAccess;
-import net.minecraft.network.FriendlyByteBuf;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.network.RegistryFriendlyByteBuf;
+import net.minecraft.network.codec.StreamCodec;
 import net.minecraft.util.RandomSource;
-import net.minecraft.world.Container;
 import net.minecraft.world.item.ItemStack;
-import net.minecraft.world.item.crafting.*;
-//import net.minecraftforge.fluids.FluidStack;
+import net.minecraft.world.item.crafting.Ingredient;
+import net.minecraft.world.item.crafting.Recipe;
+import net.minecraft.world.item.crafting.RecipeInput;
+import net.minecraft.world.item.crafting.RecipeSerializer;
+import net.minecraft.world.item.crafting.RecipeType;
 import net.neoforged.neoforge.fluids.FluidStack;
-import net.neoforged.neoforge.fluids.crafting.FluidIngredient;
 import net.neoforged.neoforge.fluids.crafting.SizedFluidIngredient;
-import org.jetbrains.annotations.NotNull;
-import org.slf4j.Logger;
-
+import net.chauvedev.woodencog.recipes.heatedRecipes.HeatedProcessingRecipeParams;
+import javax.annotation.ParametersAreNonnullByDefault;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.function.Supplier;
 
-public abstract class HeatedProcessingRecipe<I extends RecipeInput> implements Recipe<I> {
+@MethodsReturnNonnullByDefault
+@ParametersAreNonnullByDefault
+public abstract class HeatedProcessingRecipe<I extends RecipeInput, P extends HeatedProcessingRecipeParams> implements Recipe<I> {
 
-    protected final ResourceLocation id;
-    protected final NonNullList<Ingredient> ingredients;
-    protected final NonNullList<DynamicProcessingOutput<?>> results;
-    protected final NonNullList<SizedFluidIngredient> fluidIngredients;
-    protected final NonNullList<FluidStack> fluidResults;
-    protected final int processingDuration;
-    protected final WoodenCogHeatCondition requiredHeat;
-    private final RecipeType<?> type;
-    private final RecipeSerializer<?> serializer;
-    private final IRecipeTypeInfo typeInfo;
-    private Supplier<ItemStack> forcedResult = null;
+    protected P params;
+    protected NonNullList<Ingredient> ingredients;
+    protected NonNullList<DynamicProcessingOutput<?>> results;
+    protected NonNullList<SizedFluidIngredient> fluidIngredients;
+    protected NonNullList<FluidStack> fluidResults;
+    protected int processingDuration;
+    protected HeatCondition requiredHeat;
+    protected WoodenCogHeatCondition extraHeatCondition;
 
-    public HeatedProcessingRecipe(IRecipeTypeInfo typeInfo, HeatedProcessingRecipeBuilder.HeatedProcessingRecipeParams params) {
-ProcessingRecipe
-        this.typeInfo = typeInfo;
-        this.processingDuration = params.processingDuration;
-        this.fluidIngredients = params.fluidIngredients;
-        this.fluidResults = params.fluidResults;
-        this.serializer = typeInfo.getSerializer();
-        this.requiredHeat = params.requiredHeat;
+    private RecipeType<?> type;
+    private RecipeSerializer<?> serializer;
+    private IRecipeTypeInfo typeInfo;
+    private Supplier<ItemStack> forcedResult;
+
+    public HeatedProcessingRecipe(IRecipeTypeInfo typeInfo, P params) {
+        this.params = params;
         this.ingredients = params.ingredients;
-        this.type = typeInfo.getType();
+        this.fluidIngredients = params.fluidIngredients;
         this.results = params.results;
-        this.id = params.id;
-        this.validate(typeInfo.getId());
+        this.fluidResults = params.fluidResults;
+        this.processingDuration = params.processingDuration;
+        this.requiredHeat = params.requiredHeat;
+        this.extraHeatCondition = params.extraHeatCondition;
+        this.type = typeInfo.getType();
+        this.serializer = typeInfo.getSerializer();
+        this.typeInfo = typeInfo;
+        this.forcedResult = null;
     }
 
+    // Recipe type options
     protected abstract int getMaxInputCount();
-
     protected abstract int getMaxOutputCount();
 
     protected boolean canRequireHeat() {
@@ -78,163 +81,200 @@ ProcessingRecipe
         return 0;
     }
 
-    private void validate(ResourceLocation recipeTypeId) {
-        String messageHeader = "Your custom " + recipeTypeId + " recipe (" + this.id.toString() + ")";
-        Logger logger = Create.LOGGER;
-        int ingredientCount = this.ingredients.size();
-        int outputCount = this.results.size();
-        if (ingredientCount > this.getMaxInputCount()) {
-            logger.warn(messageHeader + " has more item inputs (" + ingredientCount + ") than supported (" + this.getMaxInputCount() + ").");
-        }
+    protected boolean canRequireExtraHeat() {
+        return false;
+    }
 
-        if (outputCount > this.getMaxOutputCount()) {
-            logger.warn(messageHeader + " has more item outputs (" + outputCount + ") than supported (" + this.getMaxOutputCount() + ").");
-        }
+    public List<String> validate() {
+        List<String> errors = new ArrayList<>();
+        int ingredientCount = ingredients.size();
+        int outputCount = results.size();
 
-        if (this.processingDuration > 0 && !this.canSpecifyDuration()) {
-            logger.warn(messageHeader + " specified a duration. Durations have no impact on this type of recipe.");
-        }
+        if (ingredientCount > getMaxInputCount())
+            errors.add("Recipe has more item inputs (" + ingredientCount + ") than supported ("
+                    + getMaxInputCount() + ").");
 
-        if (this.requiredHeat.getTemperature() != 0 && !this.canRequireHeat()) {
-            logger.warn(messageHeader + " specified a heat condition. Heat conditions have no impact on this type of recipe.");
-        }
+        if (outputCount > getMaxOutputCount())
+            errors.add("Recipe has more item outputs (" + outputCount + ") than supported ("
+                    + getMaxOutputCount() + ").");
 
-        ingredientCount = this.fluidIngredients.size();
-        outputCount = this.fluidResults.size();
-        if (ingredientCount > this.getMaxFluidInputCount()) {
-            logger.warn(messageHeader + " has more fluid inputs (" + ingredientCount + ") than supported (" + this.getMaxFluidInputCount() + ").");
-        }
+        ingredientCount = fluidIngredients.size();
+        outputCount = fluidResults.size();
 
-        if (outputCount > this.getMaxFluidOutputCount()) {
-            logger.warn(messageHeader + " has more fluid outputs (" + outputCount + ") than supported (" + this.getMaxFluidOutputCount() + ").");
-        }
+        if (ingredientCount > getMaxFluidInputCount())
+            errors.add("Recipe has more fluid inputs (" + ingredientCount + ") than supported ("
+                    + getMaxFluidInputCount() + ").");
+
+        if (outputCount > getMaxFluidOutputCount())
+            errors.add("Recipe has more fluid outputs (" + outputCount + ") than supported ("
+                    + getMaxFluidOutputCount() + ").");
+
+        if (processingDuration > 0 && !canSpecifyDuration())
+            errors.add("Recipe specified a duration. Durations have no impact on this type of recipe.");
+
+        if (requiredHeat != HeatCondition.NONE && !canRequireHeat())
+            errors.add("Recipe specified a heat condition. Heat conditions have no impact on this type of recipe.");
+
+        if (extraHeatCondition.hasTemp() && !canRequireExtraHeat())
+            errors.add("Recipe specified an extra heat condition. Extra heat conditions have no impact on this type of recipe.");
+
+        return errors;
+    }
+
+    public P getParams() {
+        return params;
     }
 
     /**
-     * @implNote Do not use, Use -> getHeatedIngredients();
+     * @deprecated Use getHeatedIngredients() instead
      */
-    public @NotNull NonNullList<Ingredient> getIngredients() {
-        WoodenCog.LOGGER.warn("Fetched [Ingredients] instead of [HeatableIngredients] for: " + this.id);
-        //Thread.dumpStack();
+    @Override
+    @Deprecated
+    public NonNullList<Ingredient> getIngredients() {
+        // Return empty to avoid confusion, use getHeatedIngredients()
         return NonNullList.create();
     }
-    public NonNullList<Ingredient> getHeatedIngredients(){
-        return this.ingredients;
+
+    public NonNullList<Ingredient> getHeatedIngredients() {
+        return ingredients;
     }
 
     public NonNullList<SizedFluidIngredient> getFluidIngredients() {
-        return this.fluidIngredients;
+        return fluidIngredients;
     }
 
     public List<DynamicProcessingOutput<?>> getRollableResults() {
-        return this.results;
+        return results;
     }
 
     public NonNullList<FluidStack> getFluidResults() {
-        return this.fluidResults;
+        return fluidResults;
     }
 
     public void enforceNextResult(Supplier<ItemStack> stack) {
-        this.forcedResult = stack;
+        forcedResult = stack;
     }
 
     public List<ItemStack> rollResults(List<ItemStack> usedItems, RandomSource randomSource) {
-        return this.rollResults(this.getRollableResults(), usedItems, randomSource);
+        return rollResults(this.getRollableResults(), usedItems, randomSource);
     }
 
-    @Override
-    public ItemStack assemble(I t, HolderLookup.Provider provider) {
-        return getResultItem(provider);
-    }
-
-    @Override
-    public ItemStack getResultItem(HolderLookup.Provider provider) {
-        return getRollableResults().isEmpty() ? ItemStack.EMPTY
-                : getRollableResults().getFirst()
-                .getStack();
-    }
-
-
-    public List<ItemStack> rollResults(List<DynamicProcessingOutput<?>> rollableResults, float temp, RandomSource randomSource) {
+    public List<ItemStack> rollResults(List<DynamicProcessingOutput<?>> rollableResults, float temp) {
         List<ItemStack> results = new ArrayList<>();
         for(int i = 0; i < rollableResults.size(); ++i) {
             DynamicProcessingOutput<?> output = rollableResults.get(i);
             DynamicProcessingOutput.setDynamicData(output,temp);
-            ItemStack stack = i == 0 && this.forcedResult != null ? this.forcedResult.get() : output.rollOutput(randomSource);
+            ItemStack stack = i == 0 && this.forcedResult != null ? this.forcedResult.get() : output.rollOutput();
             results.add(stack);
         }
         return results;
     }
 
-    public List<ItemStack> rollResults(List<DynamicProcessingOutput<?>> rollableResults, List<ItemStack> usedItems, RandomSource randomSource) {
+    public List<ItemStack> rollResults(
+            List<DynamicProcessingOutput<?>> rollableResults,
+            List<ItemStack> usedItems,
+            RandomSource randomSource
+    ) {
         List<ItemStack> results = new ArrayList<>();
-        for(int i = 0; i < rollableResults.size(); ++i) {
+        for (int i = 0; i < rollableResults.size(); i++) {
             DynamicProcessingOutput<?> output = rollableResults.get(i);
-            if(output.getType() == DynamicProcessingOutput.ProcessingOutputTypes.HEATED){
-                float temp = HeatHandlingUtil.computeThermalEquilibrium(usedItems);
-                DynamicProcessingOutput.setDynamicData(output, temp);
-            } else {
-                DynamicProcessingOutput.setDynamicData(output, usedItems);
+
+            if (usedItems != null) {
+                if (output.getType() == DynamicProcessingOutput.ProcessingOutputTypes.HEATED) {
+                    float temp = HeatHandlingUtil.computeThermalEquilibrium(usedItems);
+                    DynamicProcessingOutput.setDynamicData(output, temp);
+                } else {
+                    DynamicProcessingOutput.setDynamicData(output, usedItems);
+                }
             }
-            ItemStack stack = i == 0 && this.forcedResult != null ? this.forcedResult.get() : output.rollOutput(randomSource);
-            results.add(stack);
+
+            ItemStack stack = i == 0 && forcedResult != null ? forcedResult.get() : output.rollOutput(randomSource);
+            if (!stack.isEmpty())
+                results.add(stack);
         }
         return results;
     }
 
     public int getProcessingDuration() {
-        return this.processingDuration;
+        return processingDuration;
     }
 
-    public WoodenCogHeatCondition getRequiredHeat() {
-        return this.requiredHeat;
+    public HeatCondition getRequiredHeat() {
+        return requiredHeat;
     }
 
-    public @NotNull ItemStack assemble(@NotNull T inv, @NotNull RegistryAccess registryAccess) {
-        return this.getResultItem(registryAccess);
+    public WoodenCogHeatCondition getExtraHeatCondition() {
+        return extraHeatCondition;
     }
 
+    public boolean testTemperature(float sourceTemp) {
+        return extraHeatCondition.testSourceTemp(sourceTemp);
+    }
+
+    // IRecipe<> paperwork
+    @Override
+    public ItemStack assemble(I input, HolderLookup.Provider provider) {
+        return getResultItem(provider);
+    }
+
+    @Override
     public boolean canCraftInDimensions(int width, int height) {
         return true;
     }
 
-    public @NotNull ItemStack getResultItem(@NotNull RegistryAccess registryAccess) {
-        return this.getRollableResults().isEmpty() ? ItemStack.EMPTY : this.getRollableResults().get(0).getStack();
+    @Override
+    public ItemStack getResultItem(HolderLookup.Provider provider) {
+        return getRollableResults().isEmpty() ? ItemStack.EMPTY
+                : getRollableResults().get(0).getStack();
     }
 
+    @Override
     public boolean isSpecial() {
         return true;
     }
 
-    public @NotNull String getGroup() {
+    @Override
+    public String getGroup() {
         return "heated_processing";
     }
 
-    public @NotNull ResourceLocation getId() {
-        return this.id;
+    @Override
+    public RecipeSerializer<?> getSerializer() {
+        return serializer;
     }
 
-    public @NotNull RecipeSerializer<?> getSerializer() {
-        return this.serializer;
-    }
-
-    public @NotNull RecipeType<?> getType() {
-        return this.type;
+    @Override
+    public RecipeType<?> getType() {
+        return type;
     }
 
     public IRecipeTypeInfo getTypeInfo() {
-        return this.typeInfo;
+        return typeInfo;
     }
 
-    public void readAdditional(JsonObject json) {
+    public static <P extends HeatedProcessingRecipeParams, R extends HeatedProcessingRecipe<?, P>> MapCodec<R> codec(
+            Factory<P, R> factory,
+            MapCodec<P> paramsCodec
+    ) {
+        return paramsCodec.xmap(factory::create, recipe -> recipe.getParams())
+                .validate(recipe -> {
+                    var errors = recipe.validate();
+                    if (errors.isEmpty())
+                        return DataResult.success(recipe);
+                    errors.add(recipe.getClass().getSimpleName() + " failed validation:");
+                    return DataResult.error(() -> Joiner.on('\n').join(errors), recipe);
+                });
     }
 
-    public void readAdditional(FriendlyByteBuf buffer) {
+    public static <P extends HeatedProcessingRecipeParams, R extends HeatedProcessingRecipe<?, P>> StreamCodec<RegistryFriendlyByteBuf, R> streamCodec(
+            Factory<P, R> factory,
+            StreamCodec<RegistryFriendlyByteBuf, P> streamCodec
+    ) {
+        return streamCodec.map(factory::create, HeatedProcessingRecipe::getParams);
     }
 
-    public void writeAdditional(JsonObject json) {
-    }
-
-    public void writeAdditional(FriendlyByteBuf buffer) {
+    @FunctionalInterface
+    public interface Factory<P extends HeatedProcessingRecipeParams, R extends HeatedProcessingRecipe<?, P>> {
+        R create(P params);
     }
 }

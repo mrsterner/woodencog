@@ -2,6 +2,7 @@ package net.chauvedev.woodencog;
 
 import com.mojang.logging.LogUtils;
 import com.simibubi.create.AllCreativeModeTabs;
+import com.simibubi.create.Create;
 import com.simibubi.create.foundation.data.CreateRegistrate;
 import net.chauvedev.woodencog.block.generator.WoodenGeneratorRenderer;
 import net.chauvedev.woodencog.block.transformer.CTTransformerRenderer;
@@ -18,6 +19,10 @@ import net.chauvedev.woodencog.recipes.heatedRecipes.AllHeatedRecipeTypes;
 import net.chauvedev.woodencog.block.WoodencogBlocks;
 import net.createmod.ponder.foundation.PonderIndex;
 import net.minecraft.client.renderer.blockentity.BlockEntityRenderers;
+import net.minecraft.core.component.DataComponentType;
+import net.minecraft.core.registries.Registries;
+import net.minecraft.nbt.CompoundTag;
+import net.minecraft.network.codec.ByteBufCodecs;
 import net.minecraft.resources.ResourceLocation;
 //import net.minecraftforge.common.MinecraftForge;
 //import net.minecraftforge.event.BuildCreativeModeTabContentsEvent;
@@ -34,8 +39,12 @@ import net.neoforged.fml.event.lifecycle.FMLClientSetupEvent;
 import net.neoforged.fml.event.lifecycle.FMLCommonSetupEvent;
 import net.neoforged.neoforge.common.NeoForge;
 import net.neoforged.neoforge.event.BuildCreativeModeTabContentsEvent;
+import net.neoforged.neoforge.registries.DeferredRegister;
 import net.neoforged.neoforge.registries.RegisterEvent;
+import org.jetbrains.annotations.ApiStatus;
 import org.slf4j.Logger;
+
+import java.util.function.UnaryOperator;
 
 @Mod(WoodenCog.MOD_ID)
 public class WoodenCog {
@@ -63,7 +72,25 @@ public class WoodenCog {
         modEventBus.addListener(WoodenCog::onRegister);
         modEventBus.addListener(DataGenerators::gatherData);
         modEventBus.addListener(DataPackRegistries::register);
+        register(modEventBus);
         modEventBus.addListener(this::addCreative);
+    }
+    private static final DeferredRegister.DataComponents DATA_COMPONENTS = DeferredRegister.createDataComponents(Registries.DATA_COMPONENT_TYPE, Create.ID);
+
+    public static final DataComponentType<CompoundTag> GENERIC_TAG = register(
+            "generic_tag",
+            builder -> builder.persistent(CompoundTag.CODEC).networkSynchronized(ByteBufCodecs.COMPOUND_TAG)
+    );
+
+    private static <T> DataComponentType<T> register(String name, UnaryOperator<DataComponentType.Builder<T>> builder) {
+        DataComponentType<T> type = builder.apply(DataComponentType.builder()).build();
+        DATA_COMPONENTS.register(name, () -> type);
+        return type;
+    }
+
+    @ApiStatus.Internal
+    public static void register(IEventBus modEventBus) {
+        DATA_COMPONENTS.register(modEventBus);
     }
 
     public static CreateRegistrate registrate() {

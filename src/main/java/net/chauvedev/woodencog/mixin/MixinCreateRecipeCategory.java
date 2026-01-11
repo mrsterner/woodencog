@@ -19,7 +19,7 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 public abstract class MixinCreateRecipeCategory {
     public MixinCreateRecipeCategory() {
     }
-
+/*TODO
     @Inject(method = {"getResultItem(Lnet/minecraft/world/item/crafting/Recipe;)Lnet/minecraft/world/item/ItemStack;"}, at = {@At(value = "RETURN")}, cancellable = true, remap = false)
     private static void woodencog$getResultItem(Recipe<?> recipe, CallbackInfoReturnable<ItemStack> cir) {
         var output = cir.getReturnValue();
@@ -40,4 +40,6 @@ public abstract class MixinCreateRecipeCategory {
             }
         }
     }
+
+ */
 }

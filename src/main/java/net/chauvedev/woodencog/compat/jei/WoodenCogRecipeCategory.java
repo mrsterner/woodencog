@@ -28,7 +28,7 @@ import java.util.Optional;
 import java.util.function.Supplier;
 import java.util.stream.Collectors;
 
-public abstract class WoodenCogRecipeCategory<T extends HeatedProcessingRecipe<?>> implements IRecipeCategory<T> {
+public abstract class WoodenCogRecipeCategory<T extends HeatedProcessingRecipe<?, ?>> implements IRecipeCategory<T> {
     private static final IDrawable BASIC_SLOT = asDrawable(AllGuiTextures.JEI_SLOT);
     private static final IDrawable CHANCE_SLOT = asDrawable(AllGuiTextures.JEI_CHANCE_SLOT);
 
@@ -70,7 +70,7 @@ public abstract class WoodenCogRecipeCategory<T extends HeatedProcessingRecipe<?
     }
 
     public void registerRecipes(IRecipeRegistration registration) {
-        recipes.get().forEach(t -> System.out.println("Registered Recipe: "+t.getId()));
+        recipes.get().forEach(t -> System.out.println("Registered Recipe: "+t.getTypeInfo().getId()));
         registration.addRecipes(type, recipes.get());
     }
 
