@@ -7,6 +7,7 @@ import net.chauvedev.woodencog.WoodenCog;
 import net.chauvedev.woodencog.config.WoodenCogCommonConfigs;
 //import net.dries007.tfc.common.capabilities.heat.HeatCapability;
 import net.dries007.tfc.common.component.heat.HeatCapability;
+import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.nbt.TagParser;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.resources.ResourceLocation;
@@ -112,7 +113,7 @@ public class HeatedProcessingOutput extends DynamicProcessingOutput<Float> {
                 WoodenCog.LOGGER.error("[WoodenCog] Invalid Resource Location: " + itemId, e);
             }
 
-            ItemLike item = ForgeRegistries.ITEMS.getValue(ResourceLocation.tryParse(itemId));
+            ItemLike item = BuiltInRegistries.ITEM.get(ResourceLocation.tryParse(itemId));
             if (item == null) {
                 WoodenCog.LOGGER.error("[WoodenCog] Unknown item in registry: " + ResourceLocation.tryParse(itemId));
                 return null;

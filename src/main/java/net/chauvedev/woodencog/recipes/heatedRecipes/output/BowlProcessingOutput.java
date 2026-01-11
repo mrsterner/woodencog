@@ -1,6 +1,8 @@
 package net.chauvedev.woodencog.recipes.heatedRecipes.output;
 
 //import net.dries007.tfc.common.capabilities.food.*;
+import net.dries007.tfc.common.blocks.BowlBlock;
+import net.dries007.tfc.common.component.Bowl;
 import net.dries007.tfc.common.component.food.FoodCapability;
 import net.dries007.tfc.common.component.food.FoodData;
 import net.dries007.tfc.common.component.food.IFood;
@@ -10,6 +12,7 @@ import net.minecraft.nbt.CompoundTag;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 //import net.minecraftforge.registries.RegistryObject;
+import net.neoforged.neoforge.registries.DeferredHolder;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.*;
@@ -32,7 +35,7 @@ public abstract class BowlProcessingOutput extends DynamicProcessingOutput<List<
      */
     public abstract List<ItemStack> getStacks();
 
-    public ItemStack getBowlItem(Map<Nutrient, RegistryObject<Item>> map, float decayModifier){
+    public ItemStack getBowlItem(Map<Nutrient, DeferredHolder<Item, Item>> map, float decayModifier){
         List<ItemStack> usedItems = this.getDynamicData();
         usedItems.sort(Comparator.comparing(ItemStack::getCount)
                 .thenComparing((itemx) -> BuiltInRegistries.ITEM.getKey(itemx.getItem())));
@@ -81,25 +84,34 @@ public abstract class BowlProcessingOutput extends DynamicProcessingOutput<List<
                 }
             }
 
-            FoodData data = FoodData.create(HUNGER_VALUE, water, saturation, nutrition, decayModifier);
+            FoodData data = FoodData.ofFood(HUNGER_VALUE, saturation, water, decayModifier);
+            for (Nutrient nutrient : Nutrient.VALUES) {
+                data.with(Nutrient.values()[nutrient.ordinal()], nutrition[nutrient.ordinal()]);
+            }
 
             long created = FoodCapability.getRoundedCreationDate();
 
             resultStack = new ItemStack(map.get(maxNutrient).get(), getStack().getCount());
 
             final @Nullable IFood food = FoodCapability.get(resultStack);
+
+            /*TODO
             if (food instanceof DynamicBowlHandler handler) {
                 handler.setCreationDate(created);
                 handler.setIngredients(itemIngredients);
                 handler.setFood(data);
             }
 
+             */
+
             CompoundTag bowlTag = new CompoundTag();
             bowlTag.putString("id", BuiltInRegistries.ITEM.getKey(getStack().getItem()).toString());
             bowlTag.putByte("Count", (byte) 1);
-
+/*TODO
             CompoundTag custom = resultStack.getOrCreateTag();
             custom.put("bowl", bowlTag);
+
+ */
         }
 
         return resultStack;

@@ -4,20 +4,25 @@ import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonSyntaxException;
 //import net.dries007.tfc.common.capabilities.food.*;
+import net.dries007.tfc.common.component.food.FoodCapability;
+import net.dries007.tfc.common.component.food.FoodData;
+import net.dries007.tfc.common.component.food.IFood;
 import net.dries007.tfc.common.component.food.Nutrient;
 import net.dries007.tfc.common.items.TFCItems;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.util.GsonHelper;
+import net.minecraft.util.RandomSource;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 //import net.minecraftforge.registries.RegistryObject;
+import net.neoforged.neoforge.registries.DeferredHolder;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.*;
 
-public class SaladProcessingOutput extends BowlProcessingOutput{
+public class SaladProcessingOutput extends BowlProcessingOutput {
     public static final float SALAD_DECAY_MODIFIER = 4.0F;
 
     public SaladProcessingOutput(Item bowlOutput, int count, float chance) {
@@ -34,12 +39,12 @@ public class SaladProcessingOutput extends BowlProcessingOutput{
     }
 
     @Override
-    public ItemStack rollOutput() {
+    public ItemStack rollOutput(RandomSource randomSource) {
         return this.getBowlItem(TFCItems.SALADS, SALAD_DECAY_MODIFIER);
     }
 
     @Override
-    public ItemStack getBowlItem(Map<Nutrient, RegistryObject<Item>> map, float decayModifier) {
+    public ItemStack getBowlItem(Map<Nutrient, DeferredHolder<Item, Item>> map, float decayModifier) {
         List<ItemStack> usedItems = this.getDynamicData();
         usedItems.sort(Comparator.comparing(ItemStack::getCount)
                 .thenComparing((itemx) -> BuiltInRegistries.ITEM.getKey(itemx.getItem())));
@@ -91,6 +96,7 @@ public class SaladProcessingOutput extends BowlProcessingOutput{
             if (maxNutrient != null) {
                 resultStack = new ItemStack(TFCItems.SALADS.get(maxNutrient).get(), getStack().getCount());
                 final @Nullable IFood saladCap = FoodCapability.get(resultStack);
+                /*TODO
                 if (saladCap instanceof DynamicBowlHandler handler)
                 {
                     handler.setCreationDate(FoodCapability.getRoundedCreationDate());
@@ -98,6 +104,8 @@ public class SaladProcessingOutput extends BowlProcessingOutput{
                     handler.setBowl(getStack());
                     handler.setFood(FoodData.create(4, water, saturation, nutrition, 4.0f));
                 }
+
+                 */
             }
         }
         return resultStack;

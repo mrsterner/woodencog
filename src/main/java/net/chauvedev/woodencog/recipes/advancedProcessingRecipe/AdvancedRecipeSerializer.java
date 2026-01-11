@@ -1,5 +1,5 @@
 package net.chauvedev.woodencog.recipes.advancedProcessingRecipe;
-
+/*
 import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
 import com.simibubi.create.AllRecipeTypes;
@@ -111,3 +111,5 @@ public class AdvancedRecipeSerializer<T extends ProcessingRecipe<?> > extends Pr
         return Objects.requireNonNull(getCreateSerializer().fromNetwork(recipeId, buffer));
     }
 }
+
+ */

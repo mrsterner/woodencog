@@ -5,6 +5,7 @@ import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 //import net.dries007.tfc.util.JsonHelpers;
 import net.minecraft.network.FriendlyByteBuf;
+import net.minecraft.util.GsonHelper;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -20,9 +21,9 @@ public record WoodenCogFoodPortion(float nutrientModifier, float waterModifier, 
     }
 
     public static WoodenCogFoodPortion read(JsonObject json) {
-        float nutrientModifier = JsonHelpers.getAsFloat(json, "nutrient_modifier", 0.0F);
-        float waterModifier = JsonHelpers.getAsFloat(json, "water_modifier", 0.0F);
-        float saturationModifier = JsonHelpers.getAsFloat(json, "saturation_modifier", 0.0F);
+        float nutrientModifier = GsonHelper.getAsFloat(json, "nutrient_modifier", 0.0F);
+        float waterModifier = GsonHelper.getAsFloat(json, "water_modifier", 0.0F);
+        float saturationModifier = GsonHelper.getAsFloat(json, "saturation_modifier", 0.0F);
         return new WoodenCogFoodPortion(nutrientModifier, waterModifier, saturationModifier);
     }
 

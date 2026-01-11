@@ -159,12 +159,12 @@ public abstract class HeatedProcessingRecipe<I extends RecipeInput, P extends He
         return rollResults(this.getRollableResults(), usedItems, randomSource);
     }
 
-    public List<ItemStack> rollResults(List<DynamicProcessingOutput<?>> rollableResults, float temp) {
+    public List<ItemStack> rollResults(List<DynamicProcessingOutput<?>> rollableResults, float temp, RandomSource randomSource) {
         List<ItemStack> results = new ArrayList<>();
         for(int i = 0; i < rollableResults.size(); ++i) {
             DynamicProcessingOutput<?> output = rollableResults.get(i);
             DynamicProcessingOutput.setDynamicData(output,temp);
-            ItemStack stack = i == 0 && this.forcedResult != null ? this.forcedResult.get() : output.rollOutput();
+            ItemStack stack = i == 0 && this.forcedResult != null ? this.forcedResult.get() : output.rollOutput(randomSource);
             results.add(stack);
         }
         return results;

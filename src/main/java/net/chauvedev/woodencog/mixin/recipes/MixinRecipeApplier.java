@@ -2,7 +2,6 @@ package net.chauvedev.woodencog.mixin.recipes;
 
 import com.simibubi.create.content.processing.recipe.ProcessingRecipe;
 import com.simibubi.create.foundation.recipe.RecipeApplier;
-import net.chauvedev.woodencog.recipes.advancedProcessingRecipe.AllAdvancedRecipeTypes;
 import net.chauvedev.woodencog.recipes.advancedProcessingRecipe.baseRecipes.SetItemStackProvider;
 import net.chauvedev.woodencog.recipes.heatedRecipes.output.DynamicProcessingOutput;
 import net.chauvedev.woodencog.recipes.heatedRecipes.HeatedProcessingRecipe;
@@ -41,7 +40,7 @@ public abstract class MixinRecipeApplier {
             stacks = new ArrayList<>();
             for (int i = 0; i < stackIn.getCount(); i++) {
                 List<DynamicProcessingOutput<?>> outputs = pr.getRollableResults(); //get HeatedOutputs
-                List<ItemStack> v = pr.rollResults(outputs, inputTemp);
+                List<ItemStack> v = pr.rollResults(outputs, inputTemp, level.random);
                 for (ItemStack stack : v) {
                     for (ItemStack previouslyRolled : stacks) {
                         if (stack.isEmpty())
@@ -66,10 +65,7 @@ public abstract class MixinRecipeApplier {
     }
 
 
-    /**
-     * @author DeltaAnto - Manwe
-     * @reason Replace method to allow usage of current item not referenced item
-     */
+    /*
     @Inject(
             method = "applyRecipeOn(Lnet/minecraft/world/level/Level;Lnet/minecraft/world/item/ItemStack;Lnet/minecraft/world/item/crafting/Recipe;Z)Ljava/util/List;",
             at = @At("RETURN"),
@@ -79,15 +75,17 @@ public abstract class MixinRecipeApplier {
     private static void onApplyRecipeOnAtReturn(Level level, ItemStack stackIn, Recipe<?> recipe, boolean returnProcessingRemainder, CallbackInfoReturnable<List<ItemStack>> cir, List<ItemStack> stacks, ItemStack out) {
         //Handles the recipe if (advanced recipe)
         if (recipe instanceof ProcessingRecipe<?, ?> pr) {
-            boolean is_advanced_recipe = AllAdvancedRecipeTypes.CACHES.containsKey(pr.getId().toString());
+            boolean is_advanced_recipe = AllAdvancedRecipeTypes.CACHES.containsKey(pr.getTypeInfo().getId().toString());
             if (is_advanced_recipe) {
                 ArrayList<ItemStack> newStacks = new ArrayList<>();
 
-                SetItemStackProvider provider = AllAdvancedRecipeTypes.CACHES.get(pr.getId().toString());
+                SetItemStackProvider provider = AllAdvancedRecipeTypes.CACHES.get(pr.getTypeInfo().getId().toString());
                 stacks.forEach(itemStack -> newStacks.add(provider.onResultStackSingle(stackIn, itemStack)));
                 cir.setReturnValue(newStacks);
                 cir.cancel();//cancel - if it is an advanced recipe this should be the only mixin that handles it, so we cancel.
             }
         }
     }
+
+     */
 }

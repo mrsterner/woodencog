@@ -164,6 +164,6 @@ public abstract class WoodenCogRecipeCategory<T extends HeatedProcessingRecipe<?
         return background.getWidth();
     }
 
-    public record Info<T extends HeatedProcessingRecipe<?>>(RecipeType<T> recipeType, Component title, IDrawable background, IDrawable icon, Supplier<List<T>> recipes, List<Supplier<ItemStack>> catalysts) { }
+    public record Info<T extends HeatedProcessingRecipe<?, ?>>(RecipeType<T> recipeType, Component title, IDrawable background, IDrawable icon, Supplier<List<T>> recipes, List<Supplier<ItemStack>> catalysts) { }
 
 }

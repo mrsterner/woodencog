@@ -123,7 +123,7 @@ public class FoodProcessingOutput extends DynamicProcessingOutput<List<ItemStack
             int count = GsonHelper.getAsInt(json, "count", 1);
             float chance = GsonHelper.isValidNode(json, "chance") ? GsonHelper.getAsFloat(json, "chance") : 1.0F;
 
-            ItemLike item = ForgeRegistries.ITEMS.getValue(ResourceLocation.tryParse(itemId));
+            ItemLike item = BuiltInRegistries.ITEM.get(ResourceLocation.tryParse(itemId));
             if (item == null) {
                 WoodenCog.LOGGER.error("[WoodenCog] Unknown item in registry: " + ResourceLocation.tryParse(itemId));
                 return null;

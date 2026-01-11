@@ -1,6 +1,7 @@
 package net.chauvedev.woodencog.recipes.advancedProcessingRecipe.baseRecipes;
 
 import com.simibubi.create.content.processing.recipe.ProcessingOutput;
+import net.chauvedev.woodencog.WoodenCog;
 import net.dries007.tfc.common.recipes.outputs.ItemStackProvider;
 import net.minecraft.core.NonNullList;
 import net.minecraft.world.item.ItemStack;
@@ -53,7 +54,7 @@ public class AdvancedRecipe implements SetItemStackProvider{
 
         ItemStackProvider provider = new ItemStackProvider(input,output.modifiers());
         ItemStack finalStack = provider.getStack(input);
-        finalStack.setTag(stack.getTag());
+        finalStack.set(WoodenCog.GENERIC_TAG, stack.get(WoodenCog.GENERIC_TAG));
         return finalStack;
     }
 

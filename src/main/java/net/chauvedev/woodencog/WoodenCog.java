@@ -14,7 +14,6 @@ import net.chauvedev.woodencog.datapack.DataPackRegistries;
 import net.chauvedev.woodencog.interaction.CustomArmInteractionPointTypes;
 import net.chauvedev.woodencog.item.WoodencogItems;
 import net.chauvedev.woodencog.ponder.WoodenCogPonderPlugin;
-import net.chauvedev.woodencog.recipes.advancedProcessingRecipe.AllAdvancedRecipeTypes;
 import net.chauvedev.woodencog.recipes.heatedRecipes.AllHeatedRecipeTypes;
 import net.chauvedev.woodencog.block.WoodencogBlocks;
 import net.createmod.ponder.foundation.PonderIndex;
@@ -66,7 +65,7 @@ public class WoodenCog {
         WoodencogBlocks.register();
         WoodencogBlockEntityTypes.register();
 
-        AllAdvancedRecipeTypes.register(modEventBus);
+        //TODO AllAdvancedRecipeTypes.register(modEventBus);
         AllHeatedRecipeTypes.register(modEventBus);
 
         modEventBus.addListener(WoodenCog::onRegister);

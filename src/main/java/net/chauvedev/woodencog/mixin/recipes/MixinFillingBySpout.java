@@ -3,7 +3,6 @@ package net.chauvedev.woodencog.mixin.recipes;
 import com.simibubi.create.AllRecipeTypes;
 import com.simibubi.create.content.fluids.spout.FillingBySpout;
 import com.simibubi.create.content.fluids.transfer.FillingRecipe;
-import net.chauvedev.woodencog.recipes.advancedProcessingRecipe.AllAdvancedRecipeTypes;
 import net.chauvedev.woodencog.recipes.advancedProcessingRecipe.baseRecipes.SetItemStackProvider;
 //import net.dries007.tfc.common.capabilities.MoldLike;
 import net.dries007.tfc.util.Metal;
@@ -25,10 +24,8 @@ import java.util.*;
 
 @Mixin(value = FillingBySpout.class, remap = false)
 public class MixinFillingBySpout {
-    /**
-     * @author ChauveDev
-     * @reason Some items from tfc store data as nbt and filling does not check nbt information on recipe
-     */
+    /*TODO
+
     @Redirect(
             method = "canItemBeFilled",
             at = @At(value = "INVOKE", target = "Lcom/simibubi/create/AllRecipeTypes;find(Lnet/minecraft/world/item/crafting/RecipeInput;Lnet/minecraft/world/level/Level;)Ljava/util/Optional;"))
@@ -45,10 +42,7 @@ public class MixinFillingBySpout {
         return instance.find(inv, world);
     }
 
-    /**
-     * @author ChauveDev
-     * @reason Allow advanced recipe on spout filling
-     */
+
     @Redirect(method = "fillItem",
             at = @At(value = "INVOKE", target = "Lcom/simibubi/create/content/fluids/transfer/FillingRecipe;rollResults(Lnet/minecraft/util/RandomSource;)Ljava/util/List;"))
     private static List<ItemStack> fillItem(FillingRecipe instance, RandomSource randomSource) {
@@ -77,4 +71,5 @@ public class MixinFillingBySpout {
         }
         return results;
     }
+    */
 }
