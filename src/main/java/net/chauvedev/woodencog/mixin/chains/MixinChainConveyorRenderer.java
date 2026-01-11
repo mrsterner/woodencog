@@ -40,7 +40,7 @@ public abstract class MixinChainConveyorRenderer {
     private static final Map<BlockItem,ResourceLocation> CHAIN_RS = new HashMap<>();
 
     @Shadow
-    public static final ResourceLocation CHAIN_LOCATION = new ResourceLocation("textures/block/chain.png");
+    public static final ResourceLocation CHAIN_LOCATION = ResourceLocation.withDefaultNamespace("textures/block/chain.png");
 
     @Inject(
             method = "renderChains",
@@ -104,16 +104,15 @@ public abstract class MixinChainConveyorRenderer {
     private static void woodencog$renderPart(PoseStack pPoseStack, VertexConsumer pConsumer, float pMaxY, float pX0, float pZ0, float pX1, float pZ1, float pX2, float pZ2, float pX3, float pZ3, float pMinU, float pMaxU, float pMinV, float pMaxV, int light1, int light2, boolean far) {
         PoseStack.Pose posestack$pose = pPoseStack.last();
         Matrix4f matrix4f = posestack$pose.pose();
-        Matrix3f matrix3f = posestack$pose.normal();
         float uO = far ? 0.0F : 0.1875F;
-        woodencog$renderQuad(matrix4f, matrix3f, pConsumer, 0.0F, pMaxY, pX0, pZ0, pX3, pZ3, pMinU, pMaxU, pMinV, pMaxV, light1, light2);
-        woodencog$renderQuad(matrix4f, matrix3f, pConsumer, 0.0F, pMaxY, pX3, pZ3, pX0, pZ0, pMinU, pMaxU, pMinV, pMaxV, light1, light2);
-        woodencog$renderQuad(matrix4f, matrix3f, pConsumer, 0.0F, pMaxY, pX1, pZ1, pX2, pZ2, pMinU + uO, pMaxU + uO, pMinV, pMaxV, light1, light2);
-        woodencog$renderQuad(matrix4f, matrix3f, pConsumer, 0.0F, pMaxY, pX2, pZ2, pX1, pZ1, pMinU + uO, pMaxU + uO, pMinV, pMaxV, light1, light2);
+        woodencog$renderQuad(matrix4f, posestack$pose, pConsumer, 0.0F, pMaxY, pX0, pZ0, pX3, pZ3, pMinU, pMaxU, pMinV, pMaxV, light1, light2);
+        woodencog$renderQuad(matrix4f, posestack$pose, pConsumer, 0.0F, pMaxY, pX3, pZ3, pX0, pZ0, pMinU, pMaxU, pMinV, pMaxV, light1, light2);
+        woodencog$renderQuad(matrix4f, posestack$pose, pConsumer, 0.0F, pMaxY, pX1, pZ1, pX2, pZ2, pMinU + uO, pMaxU + uO, pMinV, pMaxV, light1, light2);
+        woodencog$renderQuad(matrix4f, posestack$pose, pConsumer, 0.0F, pMaxY, pX2, pZ2, pX1, pZ1, pMinU + uO, pMaxU + uO, pMinV, pMaxV, light1, light2);
     }
 
     @Unique
-    private static void woodencog$renderQuad(Matrix4f pPose, Matrix3f pNormal, VertexConsumer pConsumer, float pMinY, float pMaxY, float pMinX, float pMinZ, float pMaxX, float pMaxZ, float pMinU, float pMaxU, float pMinV, float pMaxV, int light1, int light2) {
+    private static void woodencog$renderQuad(Matrix4f pPose, PoseStack.Pose pNormal, VertexConsumer pConsumer, float pMinY, float pMaxY, float pMinX, float pMinZ, float pMaxX, float pMaxZ, float pMinU, float pMaxU, float pMinV, float pMaxV, int light1, int light2) {
         woodencog$addVertex(pPose, pNormal, pConsumer, pMaxY, pMinX, pMinZ, pMaxU, pMinV, light2);
         woodencog$addVertex(pPose, pNormal, pConsumer, pMinY, pMinX, pMinZ, pMaxU, pMaxV, light1);
         woodencog$addVertex(pPose, pNormal, pConsumer, pMinY, pMaxX, pMaxZ, pMinU, pMaxV, light1);
@@ -121,7 +120,7 @@ public abstract class MixinChainConveyorRenderer {
     }
 
     @Unique
-    private static void woodencog$addVertex(Matrix4f pPose, Matrix3f pNormal, VertexConsumer pConsumer, float pY, float pX, float pZ, float pU, float pV, int light) {
-        pConsumer.vertex(pPose, pX, pY, pZ).color(1.0F, 1.0F, 1.0F, 1.0F).uv(pU, pV).overlayCoords(OverlayTexture.NO_OVERLAY).uv2(light).normal(pNormal, 0.0F, 1.0F, 0.0F).endVertex();
+    private static void woodencog$addVertex(Matrix4f pPose, PoseStack.Pose pNormal, VertexConsumer pConsumer, float pY, float pX, float pZ, float pU, float pV, int light) {
+        pConsumer.addVertex(pPose, pX, pY, pZ).setColor(1.0F, 1.0F, 1.0F, 1.0F).setUv(pU, pV).setOverlay(OverlayTexture.NO_OVERLAY).setLight(light).setNormal(pNormal, 0.0F, 1.0F, 0.0F);
     }
 }

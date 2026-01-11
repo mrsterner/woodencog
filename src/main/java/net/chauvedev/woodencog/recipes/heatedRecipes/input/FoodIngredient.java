@@ -2,16 +2,18 @@ package net.chauvedev.woodencog.recipes.heatedRecipes.input;
 
 import com.google.gson.JsonObject;
 import net.chauvedev.woodencog.WoodenCog;
-import net.dries007.tfc.common.capabilities.food.FoodCapability;
-import net.dries007.tfc.common.capabilities.food.IFood;
-import net.dries007.tfc.common.recipes.ingredients.DelegateIngredient;
+//import net.dries007.tfc.common.capabilities.food.FoodCapability;
+//import net.dries007.tfc.common.capabilities.food.IFood;
+//import net.dries007.tfc.common.recipes.ingredients.DelegateIngredient;
+import net.dries007.tfc.common.component.food.FoodCapability;
+import net.dries007.tfc.common.component.food.IFood;
 import net.dries007.tfc.util.Helpers;
-import net.dries007.tfc.util.JsonHelpers;
+//import net.dries007.tfc.util.JsonHelpers;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.crafting.Ingredient;
-import net.minecraftforge.common.crafting.IIngredientSerializer;
+//import net.minecraftforge.common.crafting.IIngredientSerializer;
 import org.jetbrains.annotations.Nullable;
 
 public class FoodIngredient extends DelegateIngredient {

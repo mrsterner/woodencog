@@ -3,8 +3,8 @@ package net.chauvedev.woodencog.compat.jei.tfcGuiFix;
 import mezz.jei.api.constants.VanillaTypes;
 import mezz.jei.api.ingredients.IIngredientType;
 import mezz.jei.api.ingredients.ITypedIngredient;
-import net.dries007.tfc.common.capabilities.heat.HeatCapability;
-import net.dries007.tfc.common.capabilities.heat.IHeat;
+import net.dries007.tfc.common.component.heat.HeatCapability;
+import net.dries007.tfc.common.component.heat.IHeat;
 import net.minecraft.core.Holder;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.world.item.Item;
@@ -20,7 +20,7 @@ public class HeatNormalizedTypedItemStack implements ITypedIngredient<ItemStack>
     public HeatNormalizedTypedItemStack(ItemStack ingredient) {
         this.itemHolder = ingredient.getItemHolder();
         this.tag = ingredient.getTag();
-        this.heat = ingredient.getCapability(HeatCapability.CAPABILITY).resolve().orElse(null);
+        this.heat = HeatCapability.get(ingredient);
     }
     public HeatNormalizedTypedItemStack(HeatTypedItemStack typedItemStack) {
         this.itemHolder = typedItemStack.itemHolder();

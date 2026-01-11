@@ -7,17 +7,22 @@ import com.simibubi.create.content.kinetics.fan.processing.FanProcessing;
 import com.simibubi.create.content.kinetics.fan.processing.FanProcessingType;
 import net.chauvedev.woodencog.config.WoodenCogCommonConfigs;
 import net.chauvedev.woodencog.datapack.DataPackRegistries;
-import net.dries007.tfc.common.capabilities.food.FoodCapability;
-import net.dries007.tfc.common.capabilities.food.FoodTraits;
-import net.dries007.tfc.common.capabilities.heat.HeatCapability;
-import net.dries007.tfc.common.capabilities.heat.IHeat;
+//import net.dries007.tfc.common.capabilities.food.FoodCapability;
+//import net.dries007.tfc.common.capabilities.food.FoodTraits;
+//import net.dries007.tfc.common.capabilities.heat.HeatCapability;
+//import net.dries007.tfc.common.capabilities.heat.IHeat;
+import net.dries007.tfc.common.component.food.FoodCapability;
+import net.dries007.tfc.common.component.food.FoodTraits;
+import net.dries007.tfc.common.component.heat.HeatCapability;
+import net.dries007.tfc.common.component.heat.IHeat;
 import net.dries007.tfc.common.recipes.HeatingRecipe;
-import net.dries007.tfc.common.recipes.inventory.ItemStackInventory;
+//import net.dries007.tfc.common.recipes.inventory.ItemStackInventory;
 import net.minecraft.core.RegistryAccess;
 import net.minecraft.world.entity.item.ItemEntity;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.Level;
-import net.minecraftforge.fluids.FluidStack;
+//import net.minecraftforge.fluids.FluidStack;
+import net.neoforged.neoforge.fluids.FluidStack;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Unique;
 import org.spongepowered.asm.mixin.injection.At;
@@ -29,7 +34,7 @@ public class MixinFanProcessing {
 
     @Unique
     private static void applyTemp(ItemStack inputStack, IHeat cap, FanProcessingType type, RegistryAccess registryAccess) {
-        if(!inputStack.getCapability(HeatCapability.CAPABILITY).isPresent()) return;
+        if(HeatCapability.get(inputStack) == null) return;
 
         if(type.equals(AllFanProcessingTypes.BLASTING)) {
             if(!DataPackRegistries.isInTempBlacklist(inputStack, registryAccess)) {
@@ -80,13 +85,9 @@ public class MixinFanProcessing {
 
         ItemStack inputStack = transported.stack;
 
-        if(inputStack.getCapability(HeatCapability.CAPABILITY).isPresent() && WoodenCogCommonConfigs.HANDLE_TEMPERATURE.get()){
-            if(inputStack.getCapability(HeatCapability.CAPABILITY).resolve().isEmpty()) {
-                cir.setReturnValue(TransportedItemStackHandlerBehaviour.TransportedResult.doNothing());
-                return;
-            }
+        if(HeatCapability.get(inputStack) != null && WoodenCogCommonConfigs.HANDLE_TEMPERATURE.get()){
 
-            IHeat cap = inputStack.getCapability(HeatCapability.CAPABILITY).resolve().get();
+            IHeat cap = HeatCapability.get(inputStack);
 
             MixinFanProcessing.applyTemp(inputStack, cap, type, world.registryAccess());
             ItemStack result = MixinFanProcessing.applyTFCHeatingRecipe(inputStack, cap);
@@ -116,10 +117,9 @@ public class MixinFanProcessing {
     private static void applyProcessing(ItemEntity entity, FanProcessingType type, CallbackInfoReturnable<Boolean> cir) {
         ItemStack inputStack = entity.getItem();
 
-        if(inputStack.getCapability(HeatCapability.CAPABILITY).isPresent() && WoodenCogCommonConfigs.HANDLE_TEMPERATURE.get()){
-            if(inputStack.getCapability(HeatCapability.CAPABILITY).resolve().isEmpty()) return;
+        if(HeatCapability.get(inputStack) != null && WoodenCogCommonConfigs.HANDLE_TEMPERATURE.get()){
 
-            IHeat cap = inputStack.getCapability(HeatCapability.CAPABILITY).resolve().get();
+            IHeat cap = HeatCapability.get(inputStack);
 
             MixinFanProcessing.applyTemp(inputStack, cap, type, entity.level().registryAccess());
             ItemStack result = MixinFanProcessing.applyTFCHeatingRecipe(inputStack, cap);

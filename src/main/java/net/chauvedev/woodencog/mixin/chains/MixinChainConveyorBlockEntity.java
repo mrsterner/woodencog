@@ -5,6 +5,8 @@ import net.chauvedev.woodencog.mixin.blockEnitites.accessors.BlockEntityAccessor
 import net.chauvedev.woodencog.blockEntities.ChainConveyorBlockEntityExtended;
 import net.chauvedev.woodencog.utils.CogUtil;
 import net.minecraft.core.BlockPos;
+import net.minecraft.core.HolderLookup;
+import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.ListTag;
 import net.minecraft.nbt.NbtUtils;
@@ -18,7 +20,7 @@ import net.minecraft.world.level.ItemLike;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.phys.Vec3;
-import net.minecraftforge.registries.ForgeRegistries;
+//import net.minecraftforge.registries.ForgeRegistries;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
 import org.spongepowered.asm.mixin.Unique;
@@ -30,6 +32,7 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Optional;
 import java.util.function.Consumer;
 
 @Mixin(value = ChainConveyorBlockEntity.class, remap = false)
@@ -101,12 +104,12 @@ public abstract class MixinChainConveyorBlockEntity implements ChainConveyorBloc
     //Remove Connection
 
     @Inject(method = "write", at = @At("TAIL"))
-    protected void write(CompoundTag compound, boolean clientPacket, CallbackInfo ci) {
+    protected void write(CompoundTag compound, HolderLookup.Provider registries, boolean clientPacket, CallbackInfo ci) {
         ListTag list = new ListTag();
         for (Map.Entry<BlockPos, ItemLike> entry : connectionsChain.entrySet()) {
             CompoundTag entryTag = new CompoundTag();
             entryTag.put("Pos", NbtUtils.writeBlockPos(entry.getKey()));
-            ResourceLocation itemRS = ForgeRegistries.ITEMS.getKey(entry.getValue().asItem());
+            ResourceLocation itemRS = BuiltInRegistries.ITEM.getKey(entry.getValue().asItem());
             if(itemRS != null) entryTag.putString("Item", itemRS.toString());
             list.add(entryTag);
         }
@@ -114,14 +117,14 @@ public abstract class MixinChainConveyorBlockEntity implements ChainConveyorBloc
     }
 
     @Inject(method = "read", at = @At("TAIL"))
-    protected void read(CompoundTag compound, boolean clientPacket, CallbackInfo ci) {
+    protected void read(CompoundTag compound, HolderLookup.Provider registries, boolean clientPacket, CallbackInfo ci) {
         connectionsChain.clear();
         ListTag list = compound.getList("ChainConnections", Tag.TAG_COMPOUND);
         for (int i = 0; i < list.size(); i++) {
             CompoundTag entryTag = list.getCompound(i);
-            BlockPos pos = NbtUtils.readBlockPos(entryTag.getCompound("Pos"));
-            Item item = ForgeRegistries.ITEMS.getValue(ResourceLocation.tryParse(entryTag.getString("Item")));
-            if (item != null) connectionsChain.put(pos, item);
+            Optional<BlockPos> pos = NbtUtils.readBlockPos(entryTag, "Pos");
+            Item item = BuiltInRegistries.ITEM.get(ResourceLocation.tryParse(entryTag.getString("Item")));
+            if (item != null && pos.isPresent()) connectionsChain.put(pos.get(), item);
         }
     }
 

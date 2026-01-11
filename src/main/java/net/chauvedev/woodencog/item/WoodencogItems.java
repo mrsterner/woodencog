@@ -3,13 +3,16 @@ package net.chauvedev.woodencog.item;
 import com.simibubi.create.content.processing.sequenced.SequencedAssemblyItem;
 import net.chauvedev.woodencog.WoodenCog;
 import net.dries007.tfc.common.items.TFCItems;
+import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.world.item.Item;
-import net.minecraftforge.eventbus.api.IEventBus;
-import net.minecraftforge.registries.DeferredRegister;
-import net.minecraftforge.registries.ForgeRegistries;
+import net.neoforged.bus.api.IEventBus;
+import net.neoforged.neoforge.registries.DeferredRegister;
+//import net.minecraftforge.eventbus.api.IEventBus;
+//import net.minecraftforge.registries.DeferredRegister;
+//import net.minecraftforge.registries.ForgeRegistries;
 
 public class WoodencogItems {
-    public static final DeferredRegister<Item> ITEMS = DeferredRegister.create(ForgeRegistries.ITEMS, WoodenCog.MOD_ID);
+    public static final DeferredRegister<Item> ITEMS = DeferredRegister.create(BuiltInRegistries.ITEM, WoodenCog.MOD_ID);
 
     public static void register(IEventBus eventBus) {
         ITEMS.register(eventBus);

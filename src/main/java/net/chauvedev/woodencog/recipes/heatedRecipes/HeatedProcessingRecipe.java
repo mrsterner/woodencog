@@ -2,7 +2,7 @@ package net.chauvedev.woodencog.recipes.heatedRecipes;
 
 import com.google.gson.JsonObject;
 import com.simibubi.create.Create;
-import com.simibubi.create.foundation.fluid.FluidIngredient;
+//import com.simibubi.create.foundation.fluid.FluidIngredient;
 import com.simibubi.create.foundation.recipe.IRecipeTypeInfo;
 import net.chauvedev.woodencog.WoodenCog;
 import net.chauvedev.woodencog.recipes.heatedRecipes.output.DynamicProcessingOutput;
@@ -17,7 +17,9 @@ import net.minecraft.world.item.crafting.Ingredient;
 import net.minecraft.world.item.crafting.Recipe;
 import net.minecraft.world.item.crafting.RecipeSerializer;
 import net.minecraft.world.item.crafting.RecipeType;
-import net.minecraftforge.fluids.FluidStack;
+//import net.minecraftforge.fluids.FluidStack;
+import net.neoforged.neoforge.fluids.FluidStack;
+import net.neoforged.neoforge.fluids.crafting.FluidIngredient;
 import org.jetbrains.annotations.NotNull;
 import org.slf4j.Logger;
 

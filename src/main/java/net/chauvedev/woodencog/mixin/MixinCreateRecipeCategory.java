@@ -2,13 +2,14 @@ package net.chauvedev.woodencog.mixin;
 
 import com.simibubi.create.compat.jei.category.CreateRecipeCategory;
 import com.simibubi.create.content.fluids.transfer.FillingRecipe;
-import net.dries007.tfc.common.capabilities.heat.HeatCapability;
+//import net.dries007.tfc.common.capabilities.heat.HeatCapability;
 import net.dries007.tfc.common.recipes.outputs.ItemStackProvider;
-import net.minecraftforge.common.capabilities.ForgeCapabilities;
+//import net.minecraftforge.common.capabilities.ForgeCapabilities;
 import net.dries007.tfc.util.Metal;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.crafting.Recipe;
-import net.minecraftforge.fluids.capability.IFluidHandler;
+//import net.minecraftforge.fluids.capability.IFluidHandler;
+import net.neoforged.neoforge.fluids.capability.IFluidHandler;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;

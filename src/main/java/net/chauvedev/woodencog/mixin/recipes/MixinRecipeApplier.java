@@ -6,11 +6,11 @@ import net.chauvedev.woodencog.recipes.advancedProcessingRecipe.AllAdvancedRecip
 import net.chauvedev.woodencog.recipes.advancedProcessingRecipe.baseRecipes.SetItemStackProvider;
 import net.chauvedev.woodencog.recipes.heatedRecipes.output.DynamicProcessingOutput;
 import net.chauvedev.woodencog.recipes.heatedRecipes.HeatedProcessingRecipe;
-import net.dries007.tfc.common.capabilities.heat.HeatCapability;
+import net.dries007.tfc.common.component.heat.HeatCapability;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.crafting.Recipe;
 import net.minecraft.world.level.Level;
-import net.minecraftforge.items.ItemHandlerHelper;
+//import net.minecraftforge.items.ItemHandlerHelper;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
@@ -36,10 +36,8 @@ public abstract class MixinRecipeApplier {
         List<ItemStack> stacks;
         if (recipe instanceof HeatedProcessingRecipe<?> pr) {
             float inputTemp = 0;
-            if(stackIn.getCapability(HeatCapability.CAPABILITY).isPresent()){
-                if(stackIn.getCapability(HeatCapability.CAPABILITY).resolve().isPresent()){
-                    inputTemp = stackIn.getCapability(HeatCapability.CAPABILITY).resolve().get().getTemperature();
-                }
+            if(HeatCapability.get(stackIn) != null){
+                inputTemp = HeatCapability.get(stackIn).getTemperature();
             }
 
             stacks = new ArrayList<>();

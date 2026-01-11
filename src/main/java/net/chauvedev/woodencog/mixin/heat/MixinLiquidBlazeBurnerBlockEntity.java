@@ -3,7 +3,7 @@ package net.chauvedev.woodencog.mixin.heat;
 import com.mrh0.createaddition.blocks.liquid_blaze_burner.LiquidBlazeBurnerBlockEntity;
 import net.chauvedev.woodencog.compat.Compat;
 import net.chauvedev.woodencog.mixin.blockEnitites.accessors.BlockEntityAccessor;
-import net.dries007.tfc.common.capabilities.heat.HeatCapability;
+import net.dries007.tfc.common.component.heat.HeatCapability;
 import net.minecraft.world.level.Level;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;

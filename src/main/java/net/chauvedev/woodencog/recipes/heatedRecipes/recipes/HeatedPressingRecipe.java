@@ -6,14 +6,18 @@ import com.simibubi.create.content.processing.sequenced.IAssemblyRecipe;
 import net.chauvedev.woodencog.recipes.heatedRecipes.AllHeatedRecipeTypes;
 import net.chauvedev.woodencog.recipes.heatedRecipes.HeatedProcessingRecipe;
 import net.chauvedev.woodencog.recipes.heatedRecipes.HeatedProcessingRecipeBuilder;
+import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.network.chat.Component;
 import net.minecraft.world.item.crafting.Ingredient;
 import net.minecraft.world.level.ItemLike;
 import net.minecraft.world.level.Level;
-import net.minecraftforge.api.distmarker.Dist;
-import net.minecraftforge.api.distmarker.OnlyIn;
-import net.minecraftforge.items.wrapper.RecipeWrapper;
-import net.minecraftforge.registries.ForgeRegistries;
+//import net.minecraftforge.api.distmarker.Dist;
+//import net.minecraftforge.api.distmarker.OnlyIn;
+//import net.minecraftforge.items.wrapper.RecipeWrapper;
+//import net.minecraftforge.registries.ForgeRegistries;
+import net.neoforged.api.distmarker.Dist;
+import net.neoforged.api.distmarker.OnlyIn;
+import net.neoforged.neoforge.items.wrapper.RecipeWrapper;
 import org.jetbrains.annotations.NotNull;
 
 
@@ -54,7 +58,7 @@ public class HeatedPressingRecipe extends HeatedProcessingRecipe<RecipeWrapper> 
     }
 
     public void addRequiredMachines(Set<ItemLike> list) {
-        list.add(ForgeRegistries.BLOCKS.getValue(Create.asResource("mechanical_press")));
+        list.add(BuiltInRegistries.BLOCK.get(Create.asResource("mechanical_press")));
     }
 
     @Override

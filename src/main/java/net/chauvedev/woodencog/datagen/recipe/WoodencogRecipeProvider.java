@@ -1,7 +1,6 @@
 package net.chauvedev.woodencog.datagen.recipe;
 
 import com.simibubi.create.api.data.recipe.ProcessingRecipeGen;
-import com.simibubi.create.foundation.fluid.FluidIngredient;
 import net.chauvedev.woodencog.WoodenCog;
 import net.chauvedev.woodencog.datagen.DataGenStaticData;
 import net.chauvedev.woodencog.recipes.heatedRecipes.*;
@@ -19,12 +18,13 @@ import net.dries007.tfc.common.capabilities.heat.Heat;
 import net.dries007.tfc.common.items.Food;
 import net.dries007.tfc.common.items.TFCItems;
 import net.dries007.tfc.util.Metal;
+import net.minecraft.core.HolderLookup;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.data.CachedOutput;
 import net.minecraft.data.DataGenerator;
 import net.minecraft.data.DataProvider;
 import net.minecraft.data.PackOutput;
-import net.minecraft.data.recipes.FinishedRecipe;
+import net.minecraft.data.recipes.RecipeOutput;
 import net.minecraft.data.recipes.RecipeProvider;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.tags.TagKey;
@@ -35,8 +35,6 @@ import net.minecraft.world.item.Items;
 import net.minecraft.world.item.crafting.Ingredient;
 import net.minecraft.world.level.material.Fluid;
 import net.minecraft.world.level.material.Fluids;
-import net.minecraftforge.fluids.FluidStack;
-import net.minecraftforge.registries.ForgeRegistries;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -45,13 +43,13 @@ import java.util.function.Consumer;
 
 public class WoodencogRecipeProvider extends RecipeProvider {
 
-    public WoodencogRecipeProvider(DataGenerator generator, PackOutput pOutput) {
-        super(pOutput);
+    public WoodencogRecipeProvider(DataGenerator generator, PackOutput pOutput, CompletableFuture<HolderLookup.Provider> completableFuture) {
+        super(pOutput, completableFuture);
         registerAllProcessing(generator,pOutput);
     }
 
     @Override
-    protected void buildRecipes(Consumer<FinishedRecipe> consumer) {
+    protected void buildRecipes(Consumer<RecipeOutput> consumer) {
         this.alloyingRecipes(consumer);
         this.oreMeltingRecipes(consumer);
         this.metalRecipes(consumer);
@@ -61,7 +59,7 @@ public class WoodencogRecipeProvider extends RecipeProvider {
         this.jams(consumer);
     }
 
-    private void alloyingRecipes(Consumer<FinishedRecipe> consumer){
+    private void alloyingRecipes(Consumer<RecipeOutput> consumer){
         // BISMUTH BRONZE (ya convertido)
         new HeatedProcessingRecipeBuilder<>(HeatedMixingRecipe::new)
                 .withFluidIngredients(
@@ -165,7 +163,7 @@ public class WoodencogRecipeProvider extends RecipeProvider {
                 .build(consumer, alloyingRecipeResourceLocation(Metal.Default.WEAK_STEEL));
     }
 
-    private void oreMeltingRecipes(Consumer<FinishedRecipe> consumer){
+    private void oreMeltingRecipes(Consumer<RecipeOutput> consumer){
 
         DataGenStaticData.ORE_REGISTRY.forEach(ore -> {
             Item smallOre = ForgeRegistries.ITEMS.getValue(TFCOreResourceLocation("small_"+ore.oreId()));
@@ -204,7 +202,7 @@ public class WoodencogRecipeProvider extends RecipeProvider {
         });
     }
 
-    private void metalRecipes(Consumer<FinishedRecipe> consumer){
+    private void metalRecipes(Consumer<RecipeOutput> consumer){
         DataGenStaticData.METAL_REGISTRY.values().forEach(metal -> {
             Item ingot = ForgeRegistries.ITEMS.getValue(TFCIngotResourceLocation(metal.id()));
             Fluid fluidMetal = ForgeRegistries.FLUIDS.getValue(TFCMetalResourceLocation(metal.id()));
@@ -237,7 +235,7 @@ public class WoodencogRecipeProvider extends RecipeProvider {
         });
     }
 
-    private void ironBloom(Consumer<FinishedRecipe> consumer){
+    private void ironBloom(Consumer<RecipeOutput> consumer){
 
         new HeatedProcessingRecipeBuilder<>(HeatedPressingRecipe::new)
                 .withItemIngredients(HeatedIngredient.of(Ingredient.of(ItemAccess.rawIron), (int) Heat.ORANGE.getMin(),3000))
@@ -250,7 +248,7 @@ public class WoodencogRecipeProvider extends RecipeProvider {
                 .build(consumer, WoodenCog.asResource("wrought_iron"));
     }
 
-    private void sandwiches(Consumer<FinishedRecipe> consumer){
+    private void sandwiches(Consumer<RecipeOutput> consumer){
 
         buildSandwich(consumer, TFCItems.FOOD.get(Food.BARLEY_BREAD).get(), TFCItems.FOOD.get(Food.BARLEY_BREAD_SANDWICH).get(), ModTags.Compat.USABLE_IN_SANDWICH, ModTags.Compat.USABLE_IN_SANDWICH);
         buildSandwich(consumer, TFCItems.FOOD.get(Food.BARLEY_BREAD).get(), TFCItems.FOOD.get(Food.BARLEY_BREAD_JAM_SANDWICH).get(), ModTags.Compat.USABLE_IN_JAM_SANDWICH, ModTags.Compat.PRESERVES);
@@ -271,7 +269,7 @@ public class WoodencogRecipeProvider extends RecipeProvider {
         buildSandwich(consumer, TFCItems.FOOD.get(Food.WHEAT_BREAD).get(), TFCItems.FOOD.get(Food.WHEAT_BREAD_JAM_SANDWICH).get(), ModTags.Compat.USABLE_IN_JAM_SANDWICH, ModTags.Compat.PRESERVES);
     }
 
-    private static void buildSandwich(Consumer<FinishedRecipe> consumer, Item bread, Item sandwich, TagKey<Item> tag1, TagKey<Item> tag2){
+    private static void buildSandwich(Consumer<RecipeOutput> consumer, Item bread, Item sandwich, TagKey<Item> tag1, TagKey<Item> tag2){
         new HeatedProcessingRecipeBuilder<>(HeatedMixingRecipe::new)
                 .withItemIngredients(
                         FoodIngredient.of(Ingredient.of(new ItemStack(bread))),
@@ -291,7 +289,7 @@ public class WoodencogRecipeProvider extends RecipeProvider {
                 .build(consumer, WoodenCog.asResource(sandwich.toString()));
     }
 
-    private void foods(Consumer<FinishedRecipe> consumer){
+    private void foods(Consumer<RecipeOutput> consumer){
 
         new HeatedProcessingRecipeBuilder<>(HeatedMixingRecipe::new)
                 .withItemIngredients(
@@ -374,7 +372,7 @@ public class WoodencogRecipeProvider extends RecipeProvider {
                 .build(consumer, WoodenCog.asResource("food/soups_ceramic"));
     }
 
-    private void jams(Consumer<FinishedRecipe> consumer){
+    private void jams(Consumer<RecipeOutput> consumer){
 
         TFCItems.FRUIT_PRESERVES.forEach((food, itemRegistryObject) -> {
             Item jam = itemRegistryObject.get();

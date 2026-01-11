@@ -9,15 +9,18 @@ import net.dries007.tfc.common.fluids.SimpleFluid;
 import net.dries007.tfc.common.fluids.TFCFluids;
 import net.dries007.tfc.common.items.Powder;
 import net.dries007.tfc.common.items.TFCItems;
+import net.minecraft.core.HolderLookup;
 import net.minecraft.data.PackOutput;
 import net.minecraft.world.item.DyeColor;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.level.material.Fluid;
 import net.minecraft.world.level.material.Fluids;
 
+import java.util.concurrent.CompletableFuture;
+
 public class WoodenCogMixingRecipeGen extends MixingRecipeGen {
-    public WoodenCogMixingRecipeGen(PackOutput output) {
-        super(output, WoodenCog.MOD_ID);
+    public WoodenCogMixingRecipeGen(PackOutput output, CompletableFuture<HolderLookup.Provider> completableFuture) {
+        super(output, completableFuture, WoodenCog.MOD_ID);
 
         TFCFluids.COLORED_FLUIDS.keySet().forEach(this::dyeing);
     }

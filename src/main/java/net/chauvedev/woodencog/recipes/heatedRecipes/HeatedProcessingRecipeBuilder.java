@@ -3,13 +3,14 @@ package net.chauvedev.woodencog.recipes.heatedRecipes;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
 import com.simibubi.create.foundation.fluid.FluidHelper;
-import com.simibubi.create.foundation.fluid.FluidIngredient;
+//import com.simibubi.create.foundation.fluid.FluidIngredient;
 import com.simibubi.create.foundation.recipe.IRecipeTypeInfo;
 import net.chauvedev.woodencog.recipes.heatedRecipes.output.DynamicProcessingOutput;
 import net.chauvedev.woodencog.recipes.heatedRecipes.output.HeatedProcessingOutput;
-import net.dries007.tfc.common.recipes.ingredients.HeatableIngredient;
+//import net.dries007.tfc.common.recipes.ingredients.HeatableIngredient;
 import net.minecraft.core.NonNullList;
-import net.minecraft.data.recipes.FinishedRecipe;
+//import net.minecraft.data.recipes.FinishedRecipe;
+import net.minecraft.data.recipes.RecipeOutput;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.tags.TagKey;
 import net.minecraft.world.item.Item;
@@ -18,11 +19,16 @@ import net.minecraft.world.item.crafting.Ingredient;
 import net.minecraft.world.item.crafting.RecipeSerializer;
 import net.minecraft.world.level.ItemLike;
 import net.minecraft.world.level.material.Fluid;
-import net.minecraftforge.common.crafting.CraftingHelper;
-import net.minecraftforge.common.crafting.conditions.ICondition;
-import net.minecraftforge.common.crafting.conditions.ModLoadedCondition;
-import net.minecraftforge.common.crafting.conditions.NotCondition;
-import net.minecraftforge.fluids.FluidStack;
+//import net.minecraftforge.common.crafting.CraftingHelper;
+//import net.minecraftforge.common.crafting.conditions.ICondition;
+//import net.minecraftforge.common.crafting.conditions.ModLoadedCondition;
+//import net.minecraftforge.common.crafting.conditions.NotCondition;
+//import net.minecraftforge.fluids.FluidStack;
+import net.neoforged.neoforge.common.conditions.ICondition;
+import net.neoforged.neoforge.common.conditions.ModLoadedCondition;
+import net.neoforged.neoforge.common.conditions.NotCondition;
+import net.neoforged.neoforge.fluids.FluidStack;
+import net.neoforged.neoforge.fluids.crafting.FluidIngredient;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.ArrayList;
@@ -59,7 +65,7 @@ public class HeatedProcessingRecipeBuilder<T extends HeatedProcessingRecipe<?>> 
     }
 
     public HeatedProcessingRecipeBuilder<T> withFluidIngredients(FluidIngredient... ingredients) {
-        return this.withFluidIngredients(NonNullList.of(FluidIngredient.EMPTY, ingredients));
+        return this.withFluidIngredients(NonNullList.of(FluidIngredient.empty(), ingredients));
     }
 
     public HeatedProcessingRecipeBuilder<T> withFluidIngredients(NonNullList<FluidIngredient> ingredients) {
@@ -95,7 +101,7 @@ public class HeatedProcessingRecipeBuilder<T extends HeatedProcessingRecipe<?>> 
         return this.factory.create(this.params);
     }
 
-    public void build(Consumer<FinishedRecipe> consumer, ResourceLocation id) {
+    public void build(Consumer<RecipeOutput> consumer, ResourceLocation id) {
         consumer.accept(new HeatedProcessingRecipeBuilder.DataGenResult<>(this.build(id), this.recipeConditions));
     }
 
@@ -230,7 +236,7 @@ public class HeatedProcessingRecipeBuilder<T extends HeatedProcessingRecipe<?>> 
         }
     }
 
-    public static class DataGenResult<S extends HeatedProcessingRecipe<?>> implements FinishedRecipe {
+    public static class DataGenResult<S extends HeatedProcessingRecipe<?>> implements FinishedRecipe /*TODO RecipeOutput?*/ {
 
         private final List<ICondition> recipeConditions;
         private final HeatedProcessingRecipeSerializer<S> serializer;

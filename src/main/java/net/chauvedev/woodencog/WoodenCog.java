@@ -19,13 +19,22 @@ import net.chauvedev.woodencog.block.WoodencogBlocks;
 import net.createmod.ponder.foundation.PonderIndex;
 import net.minecraft.client.renderer.blockentity.BlockEntityRenderers;
 import net.minecraft.resources.ResourceLocation;
-import net.minecraftforge.common.MinecraftForge;
-import net.minecraftforge.event.BuildCreativeModeTabContentsEvent;
-import net.minecraftforge.eventbus.api.IEventBus;
-import net.minecraftforge.fml.common.Mod;
-import net.minecraftforge.fml.event.lifecycle.*;
-import net.minecraftforge.fml.javafmlmod.FMLJavaModLoadingContext;
-import net.minecraftforge.registries.RegisterEvent;
+//import net.minecraftforge.common.MinecraftForge;
+//import net.minecraftforge.event.BuildCreativeModeTabContentsEvent;
+//import net.minecraftforge.eventbus.api.IEventBus;
+//import net.minecraftforge.fml.common.Mod;
+//import net.minecraftforge.fml.event.lifecycle.*;
+//import net.minecraftforge.fml.javafmlmod.FMLJavaModLoadingContext;
+//import net.minecraftforge.registries.RegisterEvent;
+import net.neoforged.bus.api.IEventBus;
+import net.neoforged.fml.ModContainer;
+import net.neoforged.fml.common.Mod;
+import net.neoforged.fml.config.ModConfig;
+import net.neoforged.fml.event.lifecycle.FMLClientSetupEvent;
+import net.neoforged.fml.event.lifecycle.FMLCommonSetupEvent;
+import net.neoforged.neoforge.common.NeoForge;
+import net.neoforged.neoforge.event.BuildCreativeModeTabContentsEvent;
+import net.neoforged.neoforge.registries.RegisterEvent;
 import org.slf4j.Logger;
 
 @Mod(WoodenCog.MOD_ID)
@@ -34,18 +43,15 @@ public class WoodenCog {
     public static final Logger LOGGER = LogUtils.getLogger();
     private static final CreateRegistrate REGISTRATE = CreateRegistrate.create(WoodenCog.MOD_ID);
 
-    public WoodenCog() {
+    public WoodenCog(IEventBus modEventBus, ModContainer modContainer) {
         Compat.init(); //Load addon compatibility
 
-        FMLJavaModLoadingContext ctx = FMLJavaModLoadingContext.get();
-
-        IEventBus modEventBus = ctx.getModEventBus();
         modEventBus.addListener(this::setup);
         modEventBus.addListener(this::onClientSetup);
-        MinecraftForge.EVENT_BUS.register(this);
+        NeoForge.EVENT_BUS.register(this);
         REGISTRATE.registerEventListeners(modEventBus);
 
-        WoodenCogCommonConfigs.register(ctx);
+        modContainer.registerConfig(ModConfig.Type.COMMON, WoodenCogCommonConfigs.SPEC);
 
         WoodencogItems.register(modEventBus);
         WoodencogBlocks.register();

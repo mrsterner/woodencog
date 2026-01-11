@@ -3,12 +3,12 @@ package net.chauvedev.woodencog.utils;
 import net.chauvedev.woodencog.WoodenCog;
 import net.chauvedev.woodencog.config.WoodenCogCommonConfigs;
 import net.chauvedev.woodencog.datagen.DataGenStaticData;
-import net.dries007.tfc.common.capabilities.heat.HeatCapability;
+import net.dries007.tfc.common.component.heat.HeatCapability;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.tags.TagKey;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
-import net.minecraftforge.common.ForgeConfigSpec;
+import net.neoforged.neoforge.common.ModConfigSpec;
 
 import java.util.List;
 import java.util.stream.Stream;
@@ -47,7 +47,7 @@ public class HeatHandlingUtil {
                 DataGenStaticData.Metal metal = DataGenStaticData.METAL_REGISTRY.get(key);
                 if(metal != null) return metal.getDensity() * metal.getHeatCapacity();
 
-                ForgeConfigSpec.ConfigValue<List<Integer>> configValue = WoodenCogCommonConfigs.MATERIAL_PROPERTIES.get(key);
+                ModConfigSpec.ConfigValue<List<Integer>> configValue = WoodenCogCommonConfigs.MATERIAL_PROPERTIES.get(key);
                 if(configValue == null) return DEFAULT_VALUE;
                 List<Integer> properties = configValue.get();
                 if(properties.size() != 2) {
@@ -71,9 +71,8 @@ public class HeatHandlingUtil {
         float sumBot = 0;
         for (ItemStack itemStack : itemStacks){
             float temp1 = 0;
-            if(itemStack.getCapability(HeatCapability.CAPABILITY).resolve().isPresent()){
-                temp1 = itemStack.getCapability(HeatCapability.CAPABILITY).resolve().get().getTemperature();
-                //System.out.println("Temp: "+temp1);
+            if(HeatCapability.get(itemStack) != null){
+                temp1 = HeatCapability.get(itemStack).getTemperature();
             }
             float mult = getMaterialDensityCapacity(itemStack);
             sumTop += mult*temp1;
@@ -94,8 +93,8 @@ public class HeatHandlingUtil {
         float sumBot = 0;
         for (ItemStack itemStack : itemStacks){
             float temp1 = 0;
-            if(itemStack.getCapability(HeatCapability.CAPABILITY).resolve().isPresent()){
-                temp1 = itemStack.getCapability(HeatCapability.CAPABILITY).resolve().get().getTemperature();
+            if(HeatCapability.get(itemStack) != null){
+                temp1 = HeatCapability.get(itemStack).getTemperature();
             }
             float mult = getMaterialDensityCapacity(itemStack);
             sumTop += mult*temp1;

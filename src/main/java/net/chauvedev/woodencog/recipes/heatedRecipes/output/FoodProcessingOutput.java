@@ -7,7 +7,11 @@ import net.chauvedev.woodencog.WoodenCog;
 import net.chauvedev.woodencog.recipes.heatedRecipes.WoodenCogFoodPortion;
 import net.chauvedev.woodencog.utils.CogUtil;
 import net.chauvedev.woodencog.utils.ModTags;
-import net.dries007.tfc.common.capabilities.food.*;
+//import net.dries007.tfc.common.capabilities.food.*;
+import net.dries007.tfc.common.component.food.FoodCapability;
+import net.dries007.tfc.common.component.food.FoodData;
+import net.dries007.tfc.common.component.food.IFood;
+import net.dries007.tfc.common.component.food.Nutrient;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.nbt.TagParser;
 import net.minecraft.network.FriendlyByteBuf;
@@ -16,7 +20,7 @@ import net.minecraft.util.GsonHelper;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.ItemLike;
-import net.minecraftforge.registries.ForgeRegistries;
+//import net.minecraftforge.registries.ForgeRegistries;
 
 import java.util.*;
 
